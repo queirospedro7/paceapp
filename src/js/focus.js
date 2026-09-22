@@ -7,7 +7,6 @@ let remainMs = 0;
 let isPaused = false;
 let _currentFocusTask = null;
 let _focusCachedTask = null;
-let _notifiedMilestones = new Set();
 let _pomodoroMode = false;
 let _pomodoroCycle = 0;
 let _pomodoroPhase = 'work';
@@ -142,10 +141,6 @@ function startFocus(taskId, hours, mins, secs) {
   clearInterval(timer);
   timer = setInterval(focusTick, 1000);
   startSoundViz();
-  _notifiedMilestones = new Set();
-  const taskName = task ? task.name : t('focus_free_task');
-  notify('focus', t('focus_started'), `"${taskName}" — ${fmtMins(Math.ceil(totalSecsVal/60))}. ${t('focus_started_msg')}`);
-  resetIdleTimer();
 }
 
 function startPomodoro(taskId) {
@@ -194,7 +189,6 @@ function _nextPomodoroPhase() {
     updatePauseUI();
     const pill = document.getElementById('focus-phase-pill');
     if (pill) pill.textContent = isLongBreak ? t('focus_pomodoro_long_break') : t('focus_pomodoro_break');
-    showToast('info', isLongBreak ? t('focus_pause_long') : t('focus_pause_short'), isLongBreak ? t('focus_pause_long_msg') : t('focus_pause_short_msg'));
     notify('pause', isLongBreak ? t('focus_pause_long_notif') : t('focus_pause_short_notif'), isLongBreak ? t('focus_pause_long_rest') : t('focus_pause_short_rest'));
     if (typeof playAlarmSound === 'function') playAlarmSound(settings.alarmSound || 'bell');
 
@@ -210,7 +204,6 @@ function _nextPomodoroPhase() {
     updatePauseUI();
     const pill = document.getElementById('focus-phase-pill');
     if (pill) pill.textContent = t('focus_pomodoro_cycle', 'POMODORO {n}/' + maxCycles).replace('{n}', _pomodoroCycle);
-    showToast('success', t('focus_pomodoro_work'), t('focus_pomodoro_work_msg', {n: _pomodoroCycle}));
     notify('focus', t('focus_pomodoro_notif'), t('focus_pomodoro_cycle', 'POMODORO {n}/' + maxCycles).replace('{n}', _pomodoroCycle) + '.');
     if (typeof playAlarmSound === 'function') playAlarmSound(settings.alarmSound || 'bell');
 
@@ -259,23 +252,6 @@ function focusTick() {
     updateFocusTime();
     updateRing('ring-fg', remainSecs, totalSecs);
     updateRing('ring-glow', remainSecs, totalSecs);
-
-    const taskName = _focusCachedTask ? _focusCachedTask.name : t('focus_free_task');
-
-    if (remainSecs === 300 && totalSecs > 360 && !_notifiedMilestones.has('5min')) {
-      _notifiedMilestones.add('5min');
-      notify('focus', t('focus_milestone_5'), `"${taskName}" — ${t('focus_milestone_5_msg')}`);
-    }
-    if (remainSecs === 60 && totalSecs > 120 && !_notifiedMilestones.has('1min')) {
-      _notifiedMilestones.add('1min');
-      notify('focus', t('focus_milestone_1'), `"${taskName}" — ${t('focus_milestone_1_msg')}`);
-    }
-    // BUG-10: use Math.round for half to avoid floor/ceil mismatch with remainSecs
-    const half = Math.round(totalSecs / 2);
-    if (remainSecs === half && totalSecs > 120 && !_notifiedMilestones.has('half')) {
-      _notifiedMilestones.add('half');
-      notify('focus', t('focus_milestone_half'), `"${taskName}" — ${t('focus_milestone_half_msg')}`);
-    }
   }
 }
 
@@ -380,16 +356,9 @@ function togglePause() {
   isPaused = !isPaused;
   if (isPaused) {
     stopSoundViz();
-    const task = _currentFocusTask ? S.tasks.find(t => t.id === _currentFocusTask) : null;
-    const taskName = task ? task.name : t('focus_free_task');
-    notify('focus', t('focus_paused_notif_title'), `"${taskName}" — ${t('focus_paused_notif_msg')}`);
   } else {
     lastTickTime = Date.now();
     startSoundViz();
-    const task = _currentFocusTask ? S.tasks.find(t => t.id === _currentFocusTask) : null;
-    const taskName = task ? task.name : t('focus_free_task');
-    const remaining = fmtMins(Math.ceil(remainSecs / 60));
-    notify('focus', t('focus_resumed'), `"${taskName}" — ${t('focus_resumed_msg', {mins: remaining})}`);
   }
   updatePauseUI();
   updateFocusBanner();
@@ -592,31 +561,16 @@ function stopSoundViz() {
 function clearNudges() { /* nudges removed */ }
 function onNudgeSettingChanged() { /* nudges removed */ }
 
-// ---- Idle Timer ----
-
+// ---- Idle Timer (desativado para manter o foco silencioso e sem interrupções) ----
 let idleTimer = null;
-let _idleListenerAttached = false;
 function _onUserActivity() {
   clearTimeout(idleTimer);
-  idleTimer = setTimeout(() =>
-    showToast('warn', t('misc_idle_title'), t('misc_idle_msg'), 8000),
-    30 * 60 * 1000
-  );
 }
 function resetIdleTimer() {
   clearTimeout(idleTimer);
-  _onUserActivity();
-  if (!_idleListenerAttached) {
-    document.addEventListener('click', _onUserActivity, { passive: true });
-    _idleListenerAttached = true;
-  }
 }
 function stopIdleTimer() {
   clearTimeout(idleTimer);
-  if (_idleListenerAttached) {
-    document.removeEventListener('click', _onUserActivity);
-    _idleListenerAttached = false;
-  }
 }
 
 // ---- Notification Scheduler ----
@@ -628,6 +582,7 @@ function checkScheduledNotifications() {
   if (settings.notifsEnabled === false) return;
   const now = new Date();
   const todayStr = today();
+  const todayDateObj = now;
   if (_notifiedTodayDate && _notifiedTodayDate !== todayStr) {
     const prevDateStr = _notifiedTodayDate;
     const prevDateObj = new Date(prevDateStr + 'T12:00:00');
