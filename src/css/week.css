@@ -86,9 +86,12 @@
 .day-card {
   border: 1px solid var(--border);
   border-radius: var(--r);
-  overflow: visible;
+  overflow: hidden;
   transition: border-color 0.2s;
   contain: layout style;
+}
+.day-card:hover {
+  border-color: var(--border2);
 }
 .day-card.today {
   border-color: var(--border2);
@@ -113,6 +116,12 @@
   cursor: pointer;
   user-select: none;
   transition: background 0.2s;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+.day-card.collapsed .day-head {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
 .day-head:hover { background: var(--s1); }
 
