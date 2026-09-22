@@ -950,3 +950,35 @@ progress { accent-color: var(--accent); }
 }
 #month-view-btn:hover { border-color: var(--border2); color: var(--soft); background: var(--s1); }
 #month-view-btn.active { border-color: var(--border2); color: var(--text); background: var(--s2); }
+
+/* ── PACE GLOBAL BESPOKE TOOLTIP ────────────────────────────────────────── */
+.pace-tooltip {
+  position: fixed;
+  z-index: 9999999;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--s1) 94%, var(--bg));
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  padding: 5px 9px;
+  font-family: 'Lexend', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.69rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  white-space: pre-wrap;
+  max-width: 280px;
+  text-align: center;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  transform: translateY(2px) scale(0.98);
+  transition: opacity 0.12s cubic-bezier(0.16, 1, 0.3, 1), transform 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pace-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+

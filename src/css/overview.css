@@ -1888,42 +1888,59 @@
   font-style: italic;
 }
 
-/* Note Preview & Placeholder */
+/* Note Summary Card & Empty State (clean, minimalist, no scroll box) */
+.mday-note-card,
 .mday-note-preview {
   background: var(--s2);
   border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 8px 12px;
-  font-size: 0.73rem;
-  line-height: 1.45;
-  color: var(--text);
-  max-height: 75px;
-  overflow-y: auto;
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 10px 13px;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
+
+.mday-note-card:hover,
 .mday-note-preview:hover {
   border-color: var(--border2);
+  border-left-color: var(--accent);
   background: var(--s3);
 }
 
+.mday-note-card-text {
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--soft);
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.mday-note-empty,
 .mday-note-placeholder {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background: var(--s2);
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 12px;
+  background: transparent;
   border: 1px dashed var(--border);
-  border-radius: 9px;
+  border-radius: 8px;
   font-size: 0.72rem;
   color: var(--muted);
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
+
+.mday-note-empty:hover,
 .mday-note-placeholder:hover {
   border-color: var(--accent);
   color: var(--text);
-  background: var(--s3);
+  background: var(--s2);
 }
 
 /* Footer buttons */

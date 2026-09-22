@@ -591,7 +591,22 @@ function openMonthDayModal(dateStr) {
 
   // Note preview
   const noteRaw = (S.monthNotes && S.monthNotes[ds]) || '';
-  const noteText = (typeof noteRaw === 'string' ? noteRaw : (noteRaw.content || '')).replace(/<[^>]*>/g, '').trim();
+  let noteText = '';
+  if (noteRaw) {
+    const rawStr = typeof noteRaw === 'string' ? noteRaw : (noteRaw.content || '');
+    noteText = rawStr
+      .replace(/<br\s*[\/]?>/gi, '\n')
+      .replace(/<\/(p|div|li|h[1-6])>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'")
+      .replace(/\n{2,}/g, '\n')
+      .trim();
+  }
 
   // Header Title
   if (title) {
@@ -667,8 +682,13 @@ function openMonthDayModal(dateStr) {
         ${noteText ? `<button type="button" class="mday-link-btn" onclick="monthDayOpenNotes('${ds}')">${t('month_edit_note') || 'Abrir'}</button>` : ''}
       </div>
       ${noteText
-        ? `<div class="mday-note-preview" onclick="monthDayOpenNotes('${ds}')" title="${t('insp_open_note') || 'Abrir no Bloco de Notas'}">${sanitizeNoteHtml(typeof noteRaw === 'string' ? noteRaw : (noteRaw.content || ''))}</div>`
-        : `<div class="mday-note-placeholder" onclick="monthDayOpenNotes('${ds}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span>${t('insp_no_note') || 'Sem nota · Clica para escrever'}</span></div>`
+        ? `<div class="mday-note-card" onclick="monthDayOpenNotes('${ds}')" title="${t('insp_open_note') || 'Abrir no Bloco de Notas'}">
+            <div class="mday-note-card-text">${escHtml(noteText)}</div>
+          </div>`
+        : `<div class="mday-note-empty" onclick="monthDayOpenNotes('${ds}')" title="${t('insp_write_note') || 'Escrever Nota'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <span>${t('insp_no_note') || 'Sem nota · Clica para escrever'}</span>
+          </div>`
       }
     </div>
 
