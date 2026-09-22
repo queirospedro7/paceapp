@@ -92,6 +92,16 @@
       }
       return Promise.resolve(false);
     },
+    setThemeColor: function (hexColor, isDark) {
+      const invoke = getInvokeFn();
+      if (invoke) {
+        return invoke('set_window_theme_color', { hexColor: hexColor, isDark: !!isDark }).catch(function (e) {
+          console.warn('[Pace] set_window_theme_color error:', e);
+          return false;
+        });
+      }
+      return Promise.resolve(false);
+    },
   };
 
 
@@ -101,6 +111,13 @@
     if (_dispatched) return;
     _dispatched = true;
     document.dispatchEvent(new Event('tauri-bridge-ready'));
+    try {
+      if (typeof settings !== 'undefined' && typeof THEME_PALETTES !== 'undefined' && settings.theme && THEME_PALETTES[settings.theme]) {
+        const bg = THEME_PALETTES[settings.theme].bg;
+        const isDark = !['light', 'sepia'].includes(settings.theme);
+        window.appWindow.setThemeColor(bg, isDark);
+      }
+    } catch (_) {}
   }
 
   // Timer de segurança: garante que o evento dispara no máximo após 1.5s mesmo se o backend falhar

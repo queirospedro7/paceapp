@@ -133,10 +133,14 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            // Show the window after setup with explicit icon
+            // Show the window after setup with explicit icon and initial dark window theme
             if let Some(window) = app.get_webview_window("main") {
                 if let Some(ref icon) = default_icon {
                     let _ = window.set_icon(icon.clone());
+                }
+                #[cfg(windows)]
+                if let Ok(hwnd) = window.hwnd() {
+                    commands::apply_dwm_theme(hwnd.0 as *mut std::ffi::c_void, "#000000", true);
                 }
                 let _ = window.show();
             }
@@ -161,6 +165,7 @@ pub fn run() {
             commands::set_window_size,
             commands::autostart_is_enabled,
             commands::autostart_set,
+            commands::set_window_theme_color,
         ])
         .run(tauri::generate_context!())
         .expect("error while running Pace");

@@ -432,7 +432,13 @@ function applyTheme(themeOverride) {
 
   // Adaptar color-scheme para temas claros (melhora date/time pickers)
   const lightThemes = ['light', 'sepia'];
-  root.style.colorScheme = lightThemes.includes(settings.theme) ? 'light' : 'dark';
+  const isDark = !lightThemes.includes(settings.theme);
+  root.style.colorScheme = isDark ? 'dark' : 'light';
+
+  // Sincronizar cor da moldura e barra da janela do Windows (DWM) com o fundo
+  if (window.appWindow && typeof window.appWindow.setThemeColor === 'function') {
+    window.appWindow.setThemeColor(palette.bg, isDark);
+  }
 
   const contrastText = window.getContrastColor ? window.getContrastColor(settings.accentColor || '#6366f1') : '#fff';
   const readableAccent = window.getReadableAccentColor ? window.getReadableAccentColor(settings.accentColor || '#6366f1') : (settings.accentColor || '#6366f1');
