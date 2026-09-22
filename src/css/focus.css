@@ -1,0 +1,1641 @@
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: focus-in 0.35s ease forwards;
+  contain: layout style;
+}
+
+@keyframes focus-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.focus-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+  padding: 0 32px;
+}
+
+.focus-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  user-select: none;
+  max-width: 90vw;
+  box-sizing: border-box;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+.focus-meta-badge.hidden {
+  display: none !important;
+}
+.focus-meta-badge:hover {
+  opacity: 1;
+}
+
+#focus-phase-pill {
+  display: none !important;
+}
+
+#focus-task-name {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text);
+  max-width: 360px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+#focus-task-name.hidden {
+  display: none !important;
+}
+
+
+
+.ring-wrap {
+  position: relative;
+  width: auto;
+  min-width: 260px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0 16px;
+}
+
+.ring-wrap.has-hours {
+  width: auto;
+  height: auto;
+}
+
+.ring-svg,
+.clock-ring-svg { 
+  display: none !important;
+}
+
+.ring-track,
+.ring-glow,
+.ring-fg { 
+  display: none !important;
+}
+
+.style-minimal #focus-time,
+.style-zen #focus-time,
+.style-ring #focus-time,
+.style-mono #focus-time {
+  color: var(--text);
+}
+
+#focus-time {
+  font-size: 5.4rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: -6px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1;
+  transition: font-size 0.2s ease, letter-spacing 0.2s ease, transform 0.15s ease;
+  contain: layout style;
+}
+
+.ring-wrap.has-hours #focus-time,
+.focus-wrap.has-hours #focus-time {
+  font-size: 4.2rem;
+  letter-spacing: -4px;
+}
+
+#focus-time.tick {
+  animation: time-tick 0.3s ease;
+}
+
+@keyframes time-tick {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.ring-label {
+  font-size: 0.62rem;
+  font-family: inherit;
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.focus-task-notes {
+  font-size: 0.8rem;
+  color: var(--soft);
+  max-width: 480px;
+  text-align: center;
+  line-height: 1.6;
+  font-style: italic;
+  margin-top: -4px;
+  opacity: 0.85;
+}
+
+
+/* ---- Focus actions ---- */
+.focus-actions { 
+  display: flex; 
+  gap: 10px;
+  justify-content: center;
+}
+
+.focus-actions button {
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 11px 26px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  position: relative;
+}
+.focus-actions button:hover { 
+  border-color: color-mix(in srgb, var(--text) 25%, transparent); 
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+}
+.focus-actions button:active { 
+  transform: scale(0.96);
+}
+
+.focus-actions button.paused {
+  background: rgba(245,166,35,0.12);
+  border-color: rgba(245,166,35,0.3);
+  color: var(--warn);
+}
+.focus-actions button.paused:hover {
+  background: rgba(245,166,35,0.18);
+  border-color: var(--warn);
+}
+
+.focus-wrap.session-paused #focus-time {
+  opacity: 0.4;
+  transition: opacity 0.25s ease;
+}
+.focus-wrap.session-paused .ring-fg,
+.focus-wrap.session-paused .ring-glow {
+  opacity: 0.3;
+  transition: opacity 0.25s ease;
+}
+.focus-wrap.session-paused #focus-phase-pill::before {
+  background: var(--warn);
+  animation: none;
+}
+
+.btn-stop {
+  color: var(--danger) !important;
+  border-color: rgba(255,68,68,0.2) !important;
+}
+.btn-stop:hover { 
+  background: rgba(255,68,68,0.1) !important; 
+  border-color: var(--danger) !important; 
+}
+
+.timesup-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: focus-in 0.4s ease forwards;
+}
+.timesup-overlay.hidden { display: none; }
+
+.timesup-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+  padding: 0 32px;
+}
+
+.timesup-icon {
+  animation: timesup-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+@keyframes timesup-pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.timesup-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  font-family: inherit;
+  letter-spacing: -1.5px;
+  color: var(--text);
+  animation: timesup-fadein 0.4s ease 0.15s both;
+}
+
+.timesup-lead {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  animation: timesup-fadein 0.4s ease 0.2s both;
+}
+
+.timesup-summary {
+  width: 100%;
+  max-width: 360px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  animation: timesup-fadein 0.4s ease 0.28s both;
+}
+
+.timesup-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timesup-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.timesup-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.timesup-value-time {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timesup-task {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.timesup-cat {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.timesup-task-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.timesup-notes {
+  font-size: 0.78rem;
+  color: var(--soft);
+  line-height: 1.45;
+  font-style: italic;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+}
+
+@keyframes timesup-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.timesup-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  animation: timesup-fadein 0.4s ease 0.4s both;
+}
+.timesup-back-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.timesup-back-btn:active { transform: scale(0.97); }
+
+.timesup-complete-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  animation: timesup-fadein 0.4s ease 0.4s both;
+}
+.timesup-complete-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.timesup-complete-btn:active { transform: scale(0.97); }
+.timesup-complete-btn.hidden { display: none; }
+
+.timesup-skip-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, transform 0.2s;
+  animation: timesup-fadein 0.4s ease 0.45s both;
+}
+.timesup-skip-btn:hover { color: var(--text); border-color: var(--border); }
+.timesup-skip-btn:active { transform: scale(0.97); }
+.timesup-skip-btn.hidden { display: none; }
+
+.timesup-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.style-minimal .ring-track,
+.style-minimal .ring-glow,
+.style-minimal #ring-fg {
+  opacity: 0;
+}
+.style-minimal #focus-time {
+  font-size: 5.2rem;
+  letter-spacing: -7px;
+}
+.style-minimal .ring-wrap {
+  width: 280px;
+  height: 140px;
+}
+.style-minimal .ring-wrap.has-hours {
+  width: 340px;
+  height: 150px;
+}
+.style-minimal.has-hours #focus-time,
+.style-minimal .ring-wrap.has-hours #focus-time {
+  font-size: 4.2rem;
+  letter-spacing: -5px;
+}
+.style-minimal .ring-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+}
+
+.sound-visualizer {
+  gap: 2px;
+}
+.sv-bar {
+  width: 2.5px;
+}
+
+.style-zen .ring-track,
+.style-zen .ring-glow,
+.style-zen #ring-fg {
+  opacity: 0;
+}
+.style-zen .ring-wrap {
+  width: 320px;
+  height: 140px;
+  position: relative;
+}
+.style-zen .ring-wrap.has-hours {
+  width: 380px;
+  height: 150px;
+}
+.style-zen.has-hours #focus-time,
+.style-zen .ring-wrap.has-hours #focus-time {
+  font-size: 3.8rem;
+  letter-spacing: -4px;
+}
+.style-zen .ring-inner {
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+}
+.style-zen .ring-wrap::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--zen-progress, 0%);
+  height: 2px;
+  background: var(--text);
+  transition: width 1s linear;
+  border-radius: 2px;
+  z-index: 1;
+}
+.style-zen #focus-time {
+  font-size: 4.5rem;
+  letter-spacing: -3px;
+  font-weight: 200;
+  font-family: inherit;
+}
+.style-zen .ring-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.3em;
+  font-weight: 500;
+}
+.style-zen #focus-task-name {
+  color: var(--soft);
+  font-weight: 300;
+}
+
+.style-ring .ring-track,
+.style-ring .ring-glow,
+.style-ring #ring-fg { opacity: 1; }
+.style-ring #ring-fg { stroke: var(--text, #fff); }
+.style-ring .ring-wrap.has-hours {
+  width: 300px;
+  height: 300px;
+}
+.style-ring.has-hours #focus-time,
+.style-ring .ring-wrap.has-hours #focus-time {
+  font-size: 3.15rem;
+  letter-spacing: -3px;
+}
+
+/* ── DIGITAL HUD Focus Style — High-Tech Monospace Box ── */
+.style-mono .ring-svg {
+  display: none !important;
+}
+
+.style-mono .ring-wrap {
+  position: relative;
+  width: 340px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 24px;
+  background: var(--s1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s, box-shadow 0.3s;
+}
+
+.style-mono .ring-wrap.has-hours {
+  width: 400px;
+  height: 165px;
+}
+.style-mono.has-hours #focus-time,
+.style-mono .ring-wrap.has-hours #focus-time {
+  font-size: 3.6rem;
+  letter-spacing: 2px;
+}
+
+.style-mono .ring-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Linear HUD Progress Bar */
+.style-mono .ring-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--zen-progress, 0%);
+  height: 4px;
+  background: var(--text);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+  transition: width 1s linear;
+  z-index: 3;
+}
+
+/* Header Tag */
+.style-mono .ring-wrap::before {
+  content: 'SYS :: DIGITAL HUD';
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--muted);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.style-mono #focus-time {
+  font-family: 'Consolas', 'Fira Code', 'Cascadia Code', 'Courier New', monospace !important;
+  font-size: 4.5rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--text);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+  line-height: 1;
+}
+
+.style-mono .ring-label {
+  font-family: 'Consolas', 'Fira Code', 'Courier New', monospace !important;
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  color: var(--soft);
+  text-transform: uppercase;
+}
+
+.style-mono #focus-task-name {
+  font-family: 'Consolas', 'Fira Code', monospace !important;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+
+.style-mono .focus-phase-pill {
+  font-family: 'Consolas', 'Fira Code', monospace !important;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: var(--s2);
+  letter-spacing: 3px;
+  font-weight: 700;
+}
+
+/* ── Focus Mode: Discreet Back Button & Corner Dock ── */
+.focus-back-btn {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  z-index: 50;
+  opacity: 0.4;
+  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.focus-back-btn:hover {
+  opacity: 1;
+  background: var(--s2);
+  color: var(--text);
+}
+.focus-back-btn:active {
+  transform: scale(0.95);
+}
+
+/* ── Sítio escondido e discreto para alternar Foco/Relógio e Definições ── */
+.focus-discreet-dock {
+  position: absolute;
+  bottom: 20px;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: color-mix(in srgb, var(--s1) 85%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 3px 6px 3px 4px;
+  z-index: 50;
+  opacity: 0.35;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+.focus-discreet-dock:hover {
+  opacity: 1;
+  background: var(--s1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.focus-dock-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.focus-dock-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.73rem;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.16s ease;
+  line-height: 1.3;
+}
+.focus-dock-tab:hover {
+  color: var(--text);
+}
+.focus-dock-tab.active {
+  background: var(--s3);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+.focus-dock-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+.focus-dock-btn {
+  background: transparent;
+  border: none;
+  border-radius: 99px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
+.focus-dock-btn:hover {
+  background: var(--s2);
+  color: var(--text);
+}
+.focus-dock-btn:hover svg {
+  transform: scale(1.15);
+  transition: transform 0.2s ease;
+}
+
+/* ── Zen Hide-All Mode ── */
+#view-focus.focus-all-hidden .focus-meta-badge,
+#view-focus.focus-all-hidden #focus-task-notes,
+#view-focus.focus-all-hidden .focus-actions,
+#view-focus.focus-all-hidden .focus-dock-tabs,
+#view-focus.focus-all-hidden .focus-dock-sep,
+#view-focus.focus-all-hidden #clock-fs-date {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.96);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+#view-focus.focus-all-hidden .focus-back-btn {
+  opacity: 0.35;
+  pointer-events: auto !important;
+}
+#view-focus.focus-all-hidden .focus-back-btn:hover {
+  opacity: 1;
+}
+
+#view-focus.focus-all-hidden .focus-discreet-dock {
+  opacity: 0.15;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+#view-focus.focus-all-hidden .focus-discreet-dock:hover {
+  opacity: 1;
+  background: var(--s1);
+  border-color: var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+/* ── Fullscreen Clock Pane ── */
+.focus-clock-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 32px;
+  animation: focus-in 0.35s ease;
+  user-select: none;
+}
+
+.clock-ring-wrap {
+  position: relative;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.clock-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.clock-ring-fg {
+  fill: none;
+  stroke: var(--accent, #6366f1);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.2s linear;
+  filter: drop-shadow(0 0 6px var(--accent, #6366f1));
+  will-change: stroke-dashoffset;
+}
+
+.clock-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.clock-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.clock-fs-time {
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: -4px;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  color: var(--text);
+  line-height: 1;
+}
+
+.clock-fs-sec {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-fs-date {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+}
+
+/* ── Clock Style Variations ── */
+
+/* 1. Minimal */
+.clock-style-minimal .clock-ring-svg {
+  display: none !important;
+}
+.clock-style-minimal .clock-ring-wrap {
+  width: auto;
+  height: auto;
+  padding: 20px 0;
+}
+.clock-style-minimal .clock-fs-time {
+  font-size: 6.8rem;
+  letter-spacing: -8px;
+  font-weight: 800;
+  text-shadow: 0 0 40px color-mix(in srgb, var(--text) 8%, transparent);
+}
+.clock-style-minimal .clock-fs-sec {
+  font-size: 1.8rem;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.clock-style-minimal .clock-fs-date {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+/* 2. Ring */
+.clock-style-ring .clock-ring-svg {
+  display: block;
+}
+.clock-style-ring .clock-fs-time {
+  font-size: 4rem;
+  letter-spacing: -3px;
+}
+.clock-style-ring .clock-fs-sec {
+  font-size: 1.2rem;
+  color: var(--soft);
+}
+.clock-style-ring .clock-fs-date {
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* 3. Zen */
+.clock-style-zen .clock-ring-svg {
+  display: none !important;
+}
+.clock-style-zen .clock-ring-wrap {
+  width: 460px;
+  height: 200px;
+  border-bottom: 2px solid var(--accent, #6366f1);
+  border-radius: 0;
+  padding-bottom: 16px;
+  box-shadow: 0 4px 20px -6px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.clock-style-zen .clock-fs-time {
+  font-size: 5.8rem;
+  font-weight: 300;
+  letter-spacing: -4px;
+  color: var(--text);
+}
+.clock-style-zen .clock-fs-sec {
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--soft);
+}
+.clock-style-zen .clock-fs-date {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* 4. Digital HUD / Mono */
+.clock-style-mono .clock-ring-svg {
+  display: none !important;
+}
+.clock-style-mono .clock-ring-wrap {
+  position: relative;
+  width: 400px;
+  height: 190px;
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  background: var(--s1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 0 24px rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.clock-style-mono .clock-ring-wrap::before {
+  content: 'SYS :: CLOCK HUD LIVE';
+  position: absolute;
+  top: 12px;
+  left: 18px;
+  font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--muted);
+  pointer-events: none;
+  opacity: 0.8;
+}
+.clock-style-mono .clock-fs-time {
+  font-family: 'Consolas', 'Fira Code', 'Cascadia Code', 'Courier New', monospace !important;
+  font-size: 4.6rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--text);
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
+  line-height: 1;
+}
+.clock-style-mono .clock-fs-sec {
+  font-family: 'Consolas', 'Fira Code', monospace !important;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent, #6366f1);
+  line-height: 1;
+  text-shadow: 0 0 12px var(--accent, #6366f1);
+}
+.clock-style-mono .clock-fs-date {
+  font-family: 'Consolas', 'Fira Code', monospace !important;
+  font-size: 0.78rem;
+  letter-spacing: 2.5px;
+  color: var(--soft);
+  text-transform: uppercase;
+}
+
+/* ── In-focus Styles Modal ── */
+.modal-focus-styles-modal {
+  width: 440px !important;
+  max-width: 92vw !important;
+  max-height: 84vh !important;
+  background: color-mix(in srgb, var(--s1) 95%, transparent) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid var(--border2) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  animation: modalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-focus-styles-modal .modal-head {
+  padding: 15px 20px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.focus-styles-modal-body {
+  padding: 16px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  max-height: calc(84vh - 110px);
+  box-sizing: border-box;
+}
+
+.fmodal-tabs-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 16px;
+  background: var(--s2);
+  border-bottom: 1px solid var(--border);
+}
+
+.fmodal-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 5px 14px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.fmodal-tab-btn:hover {
+  color: var(--text);
+}
+.fmodal-tab-btn.active {
+  color: var(--text);
+  font-weight: 600;
+  background: var(--s1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.fmodal-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: focus-in 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.focus-modal-section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+.focus-modal-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+/* ── Stacked Style Cards in Focus Modal with Scroll ── */
+#modal-focus-styles .focus-style-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  max-height: 255px;
+  overflow-y: auto;
+  padding-right: 6px;
+  margin-bottom: 2px;
+  scroll-behavior: smooth;
+}
+
+#modal-focus-styles .focus-style-grid::-webkit-scrollbar {
+  width: 4px;
+}
+#modal-focus-styles .focus-style-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+#modal-focus-styles .focus-style-grid::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 4px;
+}
+#modal-focus-styles .focus-style-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--soft);
+}
+
+.fstyle-card {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  outline: none;
+  flex-shrink: 0;
+}
+.fstyle-card:hover {
+  border-color: var(--border2);
+  background: var(--s3);
+  transform: translateX(2px);
+}
+.fstyle-card.active {
+  border-color: var(--text);
+  background: var(--s3);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.fstyle-card-preview {
+  width: 52px;
+  height: 40px;
+  min-width: 52px;
+  border-radius: 8px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.fstyle-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.fstyle-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.fstyle-card-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fstyle-card-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+}
+.fstyle-card-check svg {
+  color: var(--text);
+}
+
+.fstyle-card-desc {
+  font-size: 0.7rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.fmodal-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── New Focus Customizer Components ── */
+.fmodal-tabs-header button svg {
+  margin-right: 6px;
+  opacity: 0.8;
+}
+.fmodal-tab-btn.active svg {
+  opacity: 1;
+}
+
+.fmodal-subtabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--s2);
+  padding: 3px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.fmodal-subtab-btn {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.fmodal-subtab-btn:hover {
+  color: var(--text);
+}
+.fmodal-subtab-btn.active {
+  background: var(--s1);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.fmodal-subpane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.fmodal-group-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft);
+  margin-top: 4px;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fmodal-group-label::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.fmodal-group {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.fmodal-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.fmodal-field-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fmodal-field-desc {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin: 0;
+}
+
+.fmodal-field-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fmodal-field-val input[type="number"] {
+  width: 52px;
+  padding: 3px 6px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.16s ease;
+}
+.fmodal-field-val input[type="number"]:focus {
+  border-color: var(--text);
+}
+
+.fmodal-presets-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.fmodal-chip {
+  padding: 3px 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--soft);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.fmodal-chip:hover {
+  background: var(--s3);
+  border-color: var(--border2);
+  color: var(--text);
+}
+.fmodal-chip:active {
+  transform: scale(0.96);
+}
+
+.fmodal-toggles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+.fmodal-toggles-grid .toggle-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.fmodal-sound-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.fmodal-select {
+  flex: 1;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.76rem;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+}
+.fmodal-select:focus {
+  border-color: var(--text);
+}
+
+.fmodal-btn-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.fmodal-btn-preview:hover {
+  background: var(--s3);
+  border-color: var(--text);
+}
+
+.fmodal-slider {
+  width: 100%;
+  accent-color: var(--text);
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.fmodal-pill-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--s1);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.fmodal-pill {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  text-align: center;
+}
+.fmodal-pill:hover {
+  color: var(--text);
+}
+.fmodal-pill.active {
+  background: var(--s2);
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+}
+
+/* ── Refined Fullscreen Clock Designs ── */
+
+/* 1. Minimal */
+.clock-style-minimal .clock-ring-svg {
+  display: none !important;
+}
+.clock-style-minimal .clock-ring-wrap {
+  width: auto;
+  height: auto;
+  padding: 24px 0;
+}
+.clock-style-minimal .clock-display {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.clock-style-minimal .clock-fs-time {
+  font-size: 7.2rem;
+  letter-spacing: -7px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 0.95;
+}
+.clock-style-minimal .clock-fs-sec {
+  font-size: 1.6rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
+  color: var(--text);
+}
+.clock-style-minimal .clock-fs-date {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--soft);
+  margin-top: 6px;
+}
+
+/* 2. Ring (Radial Horizon) */
+.clock-style-ring .clock-ring-svg {
+  display: block;
+}
+.clock-style-ring .clock-ring-wrap {
+  width: 320px;
+  height: 320px;
+}
+.clock-style-ring .clock-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.clock-style-ring .clock-fs-time {
+  font-size: 4.4rem;
+  letter-spacing: -3px;
+  font-weight: 700;
+}
+.clock-style-ring .clock-fs-sec {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--accent, #6366f1);
+}
+.clock-style-ring .clock-fs-date {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--soft);
+  letter-spacing: 0.05em;
+}
+
+/* 3. Zen (Serene Aura) */
+.clock-style-zen .clock-ring-svg {
+  display: none !important;
+}
+.clock-style-zen .clock-ring-wrap {
+  width: 500px;
+  max-width: 90vw;
+  height: 220px;
+  border-bottom: 2px solid var(--accent, #6366f1);
+  border-radius: 0;
+  padding-bottom: 20px;
+  box-shadow: 0 6px 24px -6px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.clock-style-zen .clock-fs-time {
+  font-size: 6.4rem;
+  font-weight: 200;
+  letter-spacing: -4px;
+  color: var(--text);
+  line-height: 0.95;
+}
+.clock-style-zen .clock-fs-sec {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--soft);
+}
+.clock-style-zen .clock-fs-date {
+  font-size: 0.86rem;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+/* 4. Digital HUD (Cyber Matrix) */
+.clock-style-mono .clock-ring-svg {
+  display: none !important;
+}
+.clock-style-mono .clock-ring-wrap {
+  position: relative;
+  width: 440px;
+  max-width: 92vw;
+  height: 210px;
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  background: var(--s1);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), inset 0 0 28px rgba(255, 255, 255, 0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  box-sizing: border-box;
+}
+.clock-style-mono .clock-ring-wrap::before {
+  content: '[ SYS :: CHRONO_HUD // LIVE ]';
+  position: absolute;
+  top: 14px;
+  left: 20px;
+  font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--muted);
+  pointer-events: none;
+}
+.clock-style-mono .clock-display {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 12px;
+}
+.clock-style-mono .clock-fs-time {
+  font-family: 'Consolas', 'Fira Code', 'Cascadia Code', 'Courier New', monospace !important;
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--text);
+  line-height: 1;
+}
+.clock-style-mono .clock-fs-sec {
+  font-family: 'Consolas', 'Fira Code', monospace !important;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.clock-style-mono .clock-fs-date {
+  font-family: 'Consolas', 'Fira Code', monospace !important;
+  font-size: 0.82rem;
+  letter-spacing: 2.5px;
+  color: var(--soft);
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+
+

@@ -1,0 +1,14 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for LockIn",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-set-focus",
+    "notification:default",
+    "notification:allow-request-permission",
+    "notification:allow-notify",
+    "shell:default"
+  ]
+}

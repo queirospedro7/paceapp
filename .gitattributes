@@ -1,0 +1,23 @@
+# Git Attributes
+# Garantir consistência entre Windows, macOS e Linux
+
+# Auto crlf
+* text=auto
+
+# Scripts
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# Código
+*.js text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+
+# Binários
+*.exe binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.svg text

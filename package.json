@@ -1,0 +1,29 @@
+{
+  "name": "pace",
+  "version": "1.0.0",
+  "description": "Pace - Gestor de Tarefas e Foco",
+  "author": "queirospedro",
+  "license": "MIT",
+  "homepage": "https://github.com/queirospedro7/paceapp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/queirospedro7/paceapp"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:debug": "tauri build --debug",
+    "tauri": "tauri",
+    "site:dev": "npm --prefix site run dev",
+    "site:build": "npm --prefix site run build",
+    "site:media": "node site-media-generator.js"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "opentype.js": "2.0.0",
+    "pngjs": "7.0.0"
+  }
+}

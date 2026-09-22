@@ -1,0 +1,50 @@
+[package]
+name = "pace"
+version = "1.0.0"
+description = "Pace - Gestor de Tarefas e Foco"
+authors = ["queirospedro"]
+license = "MIT"
+repository = "https://github.com/queirospedro7/paceapp"
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "pace_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[[bin]]
+name = "pace"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-notification = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-shell = "2"
+notify-rust = "4"
+winreg = "0.55"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(windows)'.dependencies]
+winrt-notification = "0.5"
+
+[package.metadata.bundle]
+name = "Pace"
+identifier = "com.queirospedro.pace"
+icon = ["icons/icon.ico", "icons/icon.icns", "icons/128x128.png", "icons/128x128@2x.png"]
+
+[package.metadata.winres]
+OriginalFilename = "Pace.exe"
+FileDescription = "Pace - Gestor de Tarefas e Foco"
+LegalCopyright = "Copyright (c) 2026 queirospedro"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

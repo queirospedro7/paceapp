@@ -1,0 +1,389 @@
+@media (max-width: 860px) {
+  html, body {
+    overflow: hidden;
+  }
+
+  .main-layout { 
+    grid-template-columns: 1fr; 
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  
+  .week-panel { 
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: 35vh;
+    order: 2;
+  }
+  
+  .right-panel {
+    order: 1;
+    min-height: 0;
+  }
+
+  .month-notes-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-large {
+    width: min(92vw, 640px);
+    max-height: 86vh;
+  }
+  
+  .focus-style-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .viz-style-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  body { font-size: 12px; }
+  header {
+    padding: 0 12px;
+    height: 48px;
+  }
+  
+  .header-left {
+    gap: 8px;
+    min-width: 0;
+  }
+  
+  .header-logo-svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .logo {
+    font-size: 0.9rem;
+  }
+
+  #date-label,
+  .header-dot,
+  .streak-chip,
+  #notif-btn {
+    display: none;
+  }
+  
+  .header-right {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  
+  #notes-btn, #tasks-btn, #notifs-btn, #export-btn, #import-btn, #settings-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  #notes-btn, #tasks-btn {
+    padding: 0;
+  }
+
+  #notes-btn, #tasks-btn span {
+    display: none;
+  }
+  
+  #clock {
+    font-size: 0.7rem;
+  }
+  
+  .add-block {
+    padding: 14px 16px 12px;
+  }
+  
+  .today-block {
+    padding: 12px 16px;
+  }
+
+  .month-notes-block {
+    padding: 14px 16px 20px;
+  }
+
+  .month-notes-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .month-notes-nav {
+    width: 100%;
+  }
+
+  .month-notes-nav button {
+    flex: 1;
+  }
+
+  .month-note-cell {
+    min-height: 32px;
+    border-radius: 7px;
+  }
+
+  .month-note-editor-wrap {
+    min-height: 240px;
+  }
+  
+  #task-input {
+    font-size: 1.2rem;
+    margin: 8px 0 6px;
+    padding: 8px 0 10px;
+  }
+  
+  #task-notes {
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+  
+  .add-row {
+    gap: 6px;
+    flex-direction: column;
+  }
+  
+  .add-row select,
+  .add-row .tag-input,
+  .add-row .time-input {
+    width: 100%;
+    font-size: 0.72rem;
+    padding: 7px 28px 7px 10px;
+  }
+  
+  .add-row .tag-input { width: 100%; }
+  .add-row .time-input { width: 100%; }
+  
+  #add-btn {
+    width: 100%;
+    margin-left: 0;
+    padding: 7px 16px;
+    font-size: 0.75rem;
+  }
+  
+  .week-header {
+    padding: 12px 12px 8px;
+  }
+  
+  .week-grid {
+    padding: 0 8px 12px;
+    gap: 2px;
+  }
+  
+  .day-card {
+    border-radius: 8px;
+  }
+  
+  .day-head {
+    padding: 8px 10px;
+  }
+  
+  .day-tasks {
+    padding: 0 10px 16px;
+  }
+  
+  .task-row {
+    padding: 9px 10px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .task-name-row,
+  .task-badges {
+    flex-wrap: wrap;
+  }
+
+  .task-del {
+    opacity: 1;
+  }
+  
+  .task-check {
+    width: 15px;
+    height: 15px;
+  }
+  
+  .task-name {
+    font-size: 0.8rem;
+  }
+  
+  #focus-time {
+    font-size: 2.4rem;
+    letter-spacing: -2px;
+  }
+  
+  .ring-wrap {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .ring-wrap.has-hours {
+    width: 225px;
+    height: 225px;
+  }
+  
+  .focus-wrap.has-hours #focus-time,
+  .ring-wrap.has-hours #focus-time {
+    font-size: 2.1rem;
+    letter-spacing: -1.5px;
+  }
+  
+  .focus-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .focus-actions button {
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+  }
+  
+  .focus-style-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  
+  .viz-style-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  
+  .style-card {
+    padding: 8px 4px 6px;
+    gap: 4px;
+  }
+  
+  .style-card-preview {
+    width: 48px;
+    height: 40px;
+  }
+  
+  .viz-card {
+    padding: 10px 4px 8px;
+  }
+  
+  .modal {
+    width: 90vw;
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .modal-large {
+    width: 95vw;
+    max-height: 88vh;
+  }
+
+  .settings-content {
+    gap: 12px;
+  }
+  
+  .settings-section {
+    padding: 12px;
+  }
+
+  .settings-row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .settings-row .field-select,
+  .settings-row .custom-dropdown,
+  .settings-row .range-slider {
+    width: 100%;
+  }
+
+  .settings-drawer-title {
+    padding: 12px;
+  }
+
+  .settings-drawer-content {
+    padding: 12px;
+  }
+  
+  .duration-presets {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  #start-focus-btn {
+    font-size: 0.68rem;
+    padding: 4px 10px;
+  }
+  
+  .timesup-inner {
+    padding: 0 20px;
+  }
+  
+  .timesup-title {
+    font-size: 1.8rem;
+  }
+  
+  .timesup-summary {
+    max-width: 90vw;
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  header {
+    padding: 0 8px;
+  }
+  
+  .header-right {
+    gap: 2px;
+  }
+  
+  #notes-btn, #tasks-btn, #notifs-btn, #export-btn, #import-btn, #settings-btn {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .add-block {
+    padding: 12px 12px 10px;
+  }
+  
+  #task-input {
+    font-size: 1rem;
+    margin: 6px 0 4px;
+  }
+  
+  .focus-style-grid,
+  .viz-style-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .style-card,
+  .viz-card {
+    padding: 10px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 340px) {
+  #clock {
+    display: none;
+  }
+
+  .focus-style-grid,
+  .viz-style-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .focus-style-grid,
+  .viz-style-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ── Month view & Focus modal responsive ────────────────────────────────── */
+@media (max-width: 520px) {
+  .modal-month-view { width: 95vw; max-height: 85vh; }
+  .modal-focus-styles-modal { width: 96vw !important; max-height: 92vh !important; }
+  .focus-styles-modal-body { padding: 14px 16px 20px; }
+  .fmodal-tabs-header { padding: 10px 14px 0; gap: 4px; }
+  .fmodal-tab-btn { padding: 7px 12px; font-size: 0.74rem; }
+  #modal-focus-styles .focus-style-grid { grid-template-columns: 1fr; gap: 8px; }
+  .focus-discreet-dock { bottom: 14px; right: 14px; }
+  .focus-back-btn { top: 12px; left: 12px; }
+  .clock-style-minimal .clock-fs-time { font-size: 4.2rem; }
+  .clock-style-zen .clock-ring-wrap { width: 90vw; }
+  .clock-style-zen .clock-fs-time { font-size: 3.8rem; }
+  .clock-style-mono .clock-ring-wrap { width: 90vw; padding: 16px; }
+  .clock-style-mono .clock-fs-time { font-size: 3.2rem; }
+}

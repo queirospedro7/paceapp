@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+  <title>Pace</title>
+  <style>
+    html,body{background:#000;margin:0;padding:0;height:100%;overflow:hidden}
+    #splash{position:fixed;inset:0;background:#000;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+  </style>
+  <script>
+    window.store = { initialData: null, setAll: function(){}, clear: function(){}, getPath: function(){} };
+    window.appNotify = { send: function(){} };
+  </script>
+
+  <link rel="stylesheet" href="fonts/lexend.css"/>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='none'%3E%3Crect width='512' height='512' fill='%23000000'/%3E%3Cpath d='M95.44 199.92Q105.68 199.92 113.68 204.64Q121.68 209.36 126.16 217.60Q130.64 225.84 130.64 236.08L130.64 238.16Q130.64 248.40 126.16 256.72Q121.68 265.04 113.68 269.76Q105.68 274.48 95.44 274.48L69.04 274.48L69.04 310L33.68 310L33.68 199.92L95.44 199.92M69.04 226L69.04 248.72L83.60 248.72Q89.20 248.72 92 245.84Q94.80 242.96 94.80 238L94.80 236.72Q94.80 231.60 92 228.80Q89.20 226 83.60 226 M254.80 310L217.36 310L212.72 294.48L174.16 294.48L169.52 310L133.36 310L173.52 199.92L214.64 199.92L254.80 310M193.20 230.64L181.52 269.84L205.36 269.84L193.84 230.64 M325.68 198Q350.16 198 364.40 210.24Q378.64 222.48 378.64 245.20L344.88 245.20Q344.88 235.60 339.84 230Q334.80 224.40 325.52 224.40Q314.80 224.40 309.76 231.12Q304.72 237.84 304.72 249.84L304.72 260.08Q304.72 271.92 309.76 278.72Q314.80 285.52 325.20 285.52Q335.44 285.52 340.72 280.24Q346 274.96 346 265.36L378.64 265.36Q378.64 287.92 364.80 299.92Q350.96 311.92 325.68 311.92Q297.52 311.92 283.04 297.52Q268.56 283.12 268.56 254.96Q268.56 226.80 283.04 212.40Q297.52 198 325.68 198 M405.68 310L405.68 199.92L500.88 199.92L500.88 226.32L441.04 226.32L441.04 241.52L492.24 241.52L492.24 266.80L441.04 266.80L441.04 283.60L502 283.60L502 310' fill='%23FFFFFF'/%3E%3C/svg%3E"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/splash.css"/>
+  <link rel="stylesheet" href="css/layout.css"/>
+  <link rel="stylesheet" href="css/week.css"/>
+  <link rel="stylesheet" href="css/tasks.css"/>
+  <link rel="stylesheet" href="css/components.css"/>
+  <link rel="stylesheet" href="css/notes.css"/>
+  <link rel="stylesheet" href="css/focus.css"/>
+  <link rel="stylesheet" href="css/modals.css"/>
+  <link rel="stylesheet" href="css/goals.css"/>
+  <link rel="stylesheet" href="css/routines.css"/>
+  <link rel="stylesheet" href="css/notifications.css"/>
+  <link rel="stylesheet" href="css/settings.css"/>
+  <link rel="stylesheet" href="css/overview.css"/>
+  <link rel="stylesheet" href="css/responsive.css"/>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-wordmark">
+    <span class="splash-pace">Pace</span>
+  </div>
+  <div class="splash-bar-wrap">
+    <div class="splash-bar"></div>
+  </div>
+</div>
+
+<div id="app">
+
+  <header>
+    <div class="header-left">
+      <div class="header-logo-group" onclick="openTasks()" title="Tarefas / Casa" style="cursor:pointer;">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14" class="header-logo-icon">
+          <path d="M7 4L15 12L7 20" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo">PACE</span>
+      </div>
+      <span class="header-dot">·</span>
+      <span id="date-label"></span>
+    </div>
+      <div class="header-right">
+        <!-- Primary nav: main views with label -->
+        <button id="tasks-btn" onclick="openTasks()" title="Tarefas" data-i18n-title="nav_tasks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span data-i18n="nav_tasks">Tarefas</span>
+        </button>
+        <button id="notes-btn" onclick="openNotes()" title="Notas" data-i18n-title="nav_notes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+          <span data-i18n="nav_notes">Notas</span>
+        </button>
+        <button id="overview-btn" onclick="openOverview()" title="Overview — mês e semana" data-i18n-title="nav_overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span data-i18n="nav_overview">Overview</span>
+        </button>
+
+        <div class="nav-sep"></div>
+
+        <!-- Secondary nav: icon-only -->
+        <button id="routines-btn" onclick="openRoutines()" title="Rotinas" data-i18n-title="nav_routines">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+        <button id="goals-btn" onclick="openGoals()" title="Objetivos" data-i18n-title="nav_goals">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </button>
+
+        <div class="nav-sep"></div>
+
+        <button id="notifs-btn" onclick="openNotifications()" title="Notificações" data-i18n-title="nav_notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span id="notif-badge" class="nav-notif-badge hidden">0</span>
+        </button>
+        <button id="settings-btn" onclick="openSettings()" title="Definições" data-i18n-title="nav_settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+
+        <!-- Subtle Background Focus Indicator (only visible when a session is active in the background) -->
+        <button id="focus-bg-chip" class="focus-bg-chip hidden" onclick="returnToFocus()" title="Sessão de foco ativa — Clica para voltar" data-i18n-title="focus_bg_chip_title">
+          <span class="focus-bg-dot"></span>
+          <span id="focus-bg-time" class="focus-bg-time">25:00</span>
+        </button>
+
+        <span id="clock" onclick="openFocusClock()" style="cursor:pointer;" title="Abrir relógio em ecrã inteiro" data-i18n-title="clock_open_fullscreen">00:00</span>
+      <button id="notif-btn" onclick="requestNotif()">
+        <svg id="notif-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span id="notif-label">Ativar alertas</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="view-main" class="main-layout">
+
+
+    <aside class="week-panel">
+      <div class="week-header">
+        <div class="week-nav-row">
+          <button class="week-arrow" onclick="shiftWeek(-1)" title="Anterior" data-i18n-title="week_prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="15,18 9,12 15,6"/></svg>
+          </button>
+          <select id="week-month-select" class="custom-select" onchange="jumpToWeekFromPicker()"></select>
+          <select id="week-year-select" class="custom-select" onchange="jumpToWeekFromPicker()"></select>
+          <button id="week-today-btn" class="week-arrow week-today-pill" onclick="goToCurrentWeek()" title="Hoje" data-i18n-title="week_today">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+          </button>
+          <button class="week-arrow" onclick="shiftWeek(1)" title="Próxima" data-i18n-title="week_next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="9,18 15,12 9,6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="week-grid" class="week-grid"></div>
+      
+      <div class="time-simple">
+  <div class="time-item">
+    <span data-i18n="week_day">Dia</span>
+    <div class="time-bar"><div id="day-bar"></div></div>
+    <span id="day-percent">0%</span>
+  </div>
+  <div class="time-item">
+    <span data-i18n="week_month">Mês</span>
+    <div class="time-bar"><div id="month-bar"></div></div>
+    <span id="month-percent">0%</span>
+  </div>
+  <div class="time-item">
+    <span data-i18n="week_year">Ano</span>
+    <div class="time-bar"><div id="year-bar"></div></div>
+    <span id="year-percent">0%</span>
+  </div>
+</div>
+    </aside>
+
+    
+    <main class="right-panel">
+
+      <div id="day-selector"></div>
+      <div class="add-block">
+        <span class="panel-label" data-i18n="task_new">Nova tarefa</span>
+        <input id="task-input" type="text" placeholder="O que tens de fazer?" data-i18n-placeholder="task_placeholder" autocomplete="off" spellcheck="false"/>
+        <textarea id="task-notes" placeholder="Notas adicionais (opcional)" data-i18n-placeholder="task_notes_placeholder" rows="2" class="hidden"></textarea>
+        <button id="toggle-notes-btn" onclick="toggleNotesInput()" class="toggle-notes-btn" data-i18n="task_add_notes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="10" height="10"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Adicionar notas
+        </button>
+        <div class="add-row">
+          <select id="inp-recur" class="custom-select">
+            <optgroup label="Recorrência" data-i18n="task_recur_label">
+              <option value="once" data-i18n="task_recur_once">Uma vez (hoje)</option>
+              <option value="specific" data-i18n="task_recur_specific">Dia específico</option>
+              <option value="range" data-i18n="task_recur_range">Intervalo de dias</option>
+              <option value="daily" data-i18n="task_recur_daily">Todos os dias</option>
+              <option value="weekdays" data-i18n="task_recur_weekdays">Dias úteis (Seg–Sex)</option>
+              <option value="weekend" data-i18n="task_recur_weekend">Fim de semana</option>
+              <option value="monthly" data-i18n="task_recur_monthly">Mensal (Todo mês)</option>
+              <option value="yearly" data-i18n="task_recur_yearly">Anual (Lembrete anual)</option>
+              <option value="custom" data-i18n="task_recur_custom">Personalizada</option>
+            </optgroup>
+            <optgroup label="Dia da semana" data-i18n="task_day_label">
+              <option value="mon" data-i18n="day_seg">Segundas-feiras</option>
+              <option value="tue" data-i18n="day_ter">Terças-feiras</option>
+              <option value="wed" data-i18n="day_qua">Quartas-feiras</option>
+              <option value="thu" data-i18n="day_qui">Quintas-feiras</option>
+              <option value="fri" data-i18n="day_sex">Sextas-feiras</option>
+              <option value="sat" data-i18n="day_sab">Sábados</option>
+              <option value="sun" data-i18n="day_dom">Domingos</option>
+            </optgroup>
+          </select>
+          <input type="date" id="inp-date" class="field-input task-date-input hidden" title="Dia específico"/>
+          <select id="inp-duration" class="custom-select">
+            <optgroup label="Rápido" data-i18n="task_dur_quick">
+              <option value="5">5 min</option>
+              <option value="10">10 min</option>
+              <option value="15">15 min</option>
+              <option value="20">20 min</option>
+            </optgroup>
+            <optgroup label="Padrão" data-i18n="task_dur_default">
+              <option value="25" selected>25 min</option>
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="50">50 min</option>
+            </optgroup>
+            <optgroup label="Longo" data-i18n="task_dur_long">
+              <option value="60" data-i18n="task_dur_1h">1 hora</option>
+              <option value="90" data-i18n="task_dur_1h30">1h 30min</option>
+              <option value="120" data-i18n="task_dur_2h">2 horas</option>
+              <option value="150" data-i18n="task_dur_2h30">2h 30min</option>
+              <option value="180" data-i18n="task_dur_3h">3 horas</option>
+              <option value="240" data-i18n="task_dur_4h">4 horas</option>
+              <option value="300" data-i18n="task_dur_5h">5 horas</option>
+              <option value="360" data-i18n="task_dur_6h">6 horas</option>
+              <option value="420" data-i18n="task_dur_7h">7 horas</option>
+              <option value="480" data-i18n="task_dur_8h">8 horas</option>
+            </optgroup>
+            <optgroup label="Especial" data-i18n="task_dur_special">
+              <option value="0" data-i18n="task_dur_indef">Indeterminado</option>
+            </optgroup>
+          </select>
+          <select id="inp-category" class="custom-select">
+            <option value="" data-i18n="task_cat_none">Sem categoria</option>
+            <option value="work" data-i18n="task_cat_work">Trabalho</option>
+            <option value="study" data-i18n="task_cat_study">Estudo</option>
+            <option value="personal" data-i18n="task_cat_personal">Pessoal</option>
+          </select>
+          <select id="inp-priority" class="custom-select">
+            <option value="normal" data-i18n="task_priority_normal">Normal</option>
+            <option value="high" data-i18n="task_priority_high">Urgente</option>
+            <option value="low" data-i18n="task_priority_low">Baixa</option>
+          </select>
+          <select id="inp-goal" class="custom-select" data-i18n-title="task_goal_title" title="Associar a um objetivo">
+            <option value="" data-i18n="task_goal_none">Sem objetivo</option>
+          </select>
+          <input type="time" id="inp-time" class="field-input time-input" data-i18n-title="task_time_title" title="Hora de alerta (notificação)"/>
+          <button id="add-btn" onclick="addTask()" data-i18n="task_add">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar
+          </button>
+        </div>
+        <div id="custom-recur-panel" class="custom-recur-panel hidden">
+          <div class="custom-recur-dates">
+            <label>
+              <span data-i18n="recur_from">De</span>
+              <input type="date" id="custom-recur-start" class="field-input"/>
+            </label>
+            <label>
+              <span data-i18n="recur_until">Até</span>
+              <input type="date" id="custom-recur-end" class="field-input"/>
+            </label>
+          </div>
+          <div class="custom-recur-days" aria-label="Dias da recorrência">
+            <label><input type="checkbox" value="1"/><span data-i18n="recur_mon">Seg</span></label>
+            <label><input type="checkbox" value="2"/><span data-i18n="recur_tue">Ter</span></label>
+            <label><input type="checkbox" value="3"/><span data-i18n="recur_wed">Qua</span></label>
+            <label><input type="checkbox" value="4"/><span data-i18n="recur_thu">Qui</span></label>
+            <label><input type="checkbox" value="5"/><span data-i18n="recur_fri">Sex</span></label>
+            <label><input type="checkbox" value="6"/><span data-i18n="recur_sat">Sáb</span></label>
+            <label><input type="checkbox" value="0"/><span data-i18n="recur_sun">Dom</span></label>
+          </div>
+        </div>
+        <div id="range-recur-panel" class="custom-recur-panel hidden">
+          <div class="custom-recur-dates">
+            <label>
+              <span data-i18n="recur_from">De</span>
+              <input type="date" id="range-recur-start" class="field-input"/>
+            </label>
+            <label>
+              <span data-i18n="recur_until">Até</span>
+              <input type="date" id="range-recur-end" class="field-input"/>
+            </label>
+          </div>
+        </div>
+        <div id="template-picker" class="template-picker hidden"></div>
+      </div>
+
+      <div class="today-block">
+        <div class="today-header">
+          <div class="today-header-left">
+            <span class="panel-label" data-i18n="today_label">Hoje</span>
+            <span id="today-count" class="today-count"></span>
+            <div class="task-sort-container">
+              <button type="button" id="task-sort-btn" class="task-sort-btn" onclick="toggleTaskSortMenu(event)" title="Organizar tarefas" data-i18n-title="task_sort_title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="11" height="11"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+                <span id="task-sort-label" class="task-sort-label" data-i18n="task_sort_default">Ordem Padrão</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="9" height="9" class="sort-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div id="task-sort-menu" class="task-sort-menu hidden">
+                <button type="button" class="task-sort-opt active" data-sort="default" onclick="setTaskSort('default')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  <span data-i18n="task_sort_default">Ordem Padrão</span>
+                </button>
+                <button type="button" class="task-sort-opt" data-sort="top_to_bottom" onclick="setTaskSort('top_to_bottom')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                  <span data-i18n="task_sort_top_bottom">Cima para Baixo</span>
+                </button>
+                <button type="button" class="task-sort-opt" data-sort="bottom_to_top" onclick="setTaskSort('bottom_to_top')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                  <span data-i18n="task_sort_bottom_top">Baixo para Cima</span>
+                </button>
+                <button type="button" class="task-sort-opt" data-sort="priority" onclick="setTaskSort('priority')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <span data-i18n="task_sort_priority">Por Prioridade</span>
+                </button>
+                <button type="button" class="task-sort-opt" data-sort="time" onclick="setTaskSort('time')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <span data-i18n="task_sort_time">Por Horário</span>
+                </button>
+                <button type="button" class="task-sort-opt" data-sort="duration" onclick="setTaskSort('duration')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                  <span data-i18n="task_sort_duration">Por Duração</span>
+                </button>
+                <button type="button" class="task-sort-opt" data-sort="alpha" onclick="setTaskSort('alpha')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
+                  <span data-i18n="task_sort_alpha">Nome (A–Z)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button id="start-focus-btn" onclick="openFocusPicker()" data-i18n="today_focus">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="10" height="10"><polygon points="5,3 19,12 5,21"/></svg>
+            Iniciar foco
+          </button>
+        </div>
+        <div class="progress-bar-wrap"><div id="progress-fill" class="progress-fill"></div></div>
+        <div class="search-bar">
+          <input id="task-search" type="text" placeholder="Filtrar tarefas..." data-i18n-placeholder="today_filter" autocomplete="off" spellcheck="false" class="search-input" oninput="filterTasks(this.value)"/>
+        </div>
+        <div id="today-list" class="task-list" ondragover="onTodayListDragOver(event)" ondrop="onTodayListDrop(event)"></div>
+      </div>
+
+
+      <section class="month-notes-block hidden" aria-hidden="true">
+        <div class="month-notes-head">
+          <div>
+            <span class="panel-label" data-i18n="notes_title">Notas do mês</span>
+            <h2 id="month-notes-title-main" data-i18n="notes_month">Mês</h2>
+          </div>
+          <div class="month-notes-nav">
+            <button onclick="shiftMonth(-1)" title="Mês anterior" data-i18n-title="notes_prev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="15,18 9,12 15,6"/></svg>
+            </button>
+            <button onclick="goToCurrentMonth()" data-i18n="notes_today">Hoje</button>
+            <button onclick="shiftMonth(1)" title="Mês seguinte" data-i18n-title="notes_next">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="9,18 15,12 9,6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="month-notes-layout">
+          <div class="month-notes-calendar">
+            <div class="month-weekdays"><span data-i18n="recur_mon">Seg</span><span data-i18n="recur_tue">Ter</span><span data-i18n="recur_wed">Qua</span><span data-i18n="recur_thu">Qui</span><span data-i18n="recur_fri">Sex</span><span data-i18n="recur_sat">Sáb</span><span data-i18n="recur_sun">Dom</span></div>
+            <div id="month-notes-grid-main" class="month-notes-grid"></div>
+          </div>
+<div class="month-note-editor-wrap">
+             <div class="month-note-toolbar">
+               <span id="month-note-date-main"></span>
+                <span id="month-note-status-main" class="note-save-status" data-i18n="notes_saved">Guardado</span>
+            <div class="month-note-tools">
+
+                 <button type="button" class="note-tool-btn note-tool-text" data-cmd="bold" onclick="execNoteCommand('bold')" title="Negrito (Ctrl+B)" data-i18n-title="tb_bold"><b>B</b></button>
+                 <button type="button" class="note-tool-btn note-tool-text" data-cmd="italic" onclick="execNoteCommand('italic')" title="Itálico (Ctrl+I)" data-i18n-title="tb_italic"><i>I</i></button>
+                 <button type="button" class="note-tool-btn note-tool-text" data-cmd="underline" onclick="execNoteCommand('underline')" title="Sublinhado (Ctrl+U)" data-i18n-title="tb_underline"><u>U</u></button>
+                 <button type="button" class="note-tool-btn note-tool-text" data-cmd="strikeThrough" onclick="execNoteCommand('strikeThrough')" title="Rasurado" data-i18n-title="tb_strike"><s>S</s></button>
+                 <div class="note-tool-separator"></div>
+                 <button type="button" class="note-tool-btn note-tool-text" data-cmd="formatBlock" data-arg="H1" onclick="execNoteCommand('formatBlock','H1')" title="Título 1" data-i18n-title="tb_h1" style="font-weight:800;font-size:0.72rem;">H1</button>
+                 <button type="button" class="note-tool-btn note-tool-text" data-cmd="formatBlock" data-arg="H2" onclick="execNoteCommand('formatBlock','H2')" title="Título 2" data-i18n-title="tb_h2" style="font-weight:700;font-size:0.68rem;">H2</button>
+                 <div class="note-tool-separator"></div>
+                 <button type="button" class="note-tool-btn" data-cmd="insertUnorderedList" onclick="execNoteCommand('insertUnorderedList')" title="Lista com marcadores" data-i18n-title="tb_ul">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+                 </button>
+                 <button type="button" class="note-tool-btn" data-cmd="insertOrderedList" onclick="execNoteCommand('insertOrderedList')" title="Lista numerada" data-i18n-title="tb_ol">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4H4"/><path d="M4 14h1.5a.5.5 0 0 1 0 1H4.5a.5.5 0 0 0 0 1H6"/></svg>
+                 </button>
+                 <div class="note-tool-separator"></div>
+                 <button type="button" class="note-tool-btn" onclick="execNoteCommand('undo')" title="Desfazer (Ctrl+Z)" data-i18n-title="tb_undo">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M3 7v6h6"/><path d="M3 13A9 9 0 1 0 6 6.7L3 13"/></svg>
+                 </button>
+                 <button type="button" class="note-tool-btn" onclick="execNoteCommand('redo')" title="Refazer (Ctrl+Y)" data-i18n-title="tb_redo">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M21 7v6h-6"/><path d="M21 13A9 9 0 1 0 18 6.7L21 13"/></svg>
+                 </button>
+                 <button type="button" class="note-tool-btn" onclick="confirmClearNote()" title="Limpar nota" data-i18n-title="tb_clear">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                 </button>
+                 <div class="note-tool-separator"></div>
+                 <button type="button" class="note-tool-btn" onclick="insertNoteBlockquote()" title="Citação" data-i18n-title="tb_blockquote">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M6 17h3l2-4V7H5v6h3"/><path d="M15 17h3l2-4V7h-6v6h3"/></svg>
+                 </button>
+                 <button type="button" class="note-tool-btn" onclick="insertNoteDateTime()" title="Inserir data e hora atual" data-i18n-title="tb_datetime">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                 </button>
+                 <div class="note-tool-separator"></div>
+                 <button type="button" class="note-tool-btn" onclick="exportCurrentNote()" title="Exportar nota do dia" data-i18n-title="notes_export_day">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                 </button>
+               </div>
+             </div>
+             <div id="month-note-editor-main" class="month-note-editor" contenteditable="true" spellcheck="true" oninput="saveSelectedNote()" data-placeholder="Escreve aqui as tuas notas..." data-i18n-placeholder="editor_placeholder"></div>
+           </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  
+  <!-- month-view modal removed — calendar is now embedded in the Overview tab -->
+
+  <div id="view-overview" class="overview-page hidden">
+    <!-- ── Overview header ──────────────────────────────────────── -->
+    <div class="ov-header">
+      <div class="ov-header-left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="ov-title-text" data-i18n="nav_overview">Overview</span>
+      </div>
+
+      <!-- Tab navigation -->
+      <nav class="ov-tabs" role="tablist">
+        <button class="ov-tab active" id="ov-tab-month" role="tab" aria-selected="true"
+                onclick="ovSetTab('month')" data-i18n="ov_tab_month">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Month
+        </button>
+        <button class="ov-tab" id="ov-tab-week" role="tab" aria-selected="false"
+                onclick="ovSetTab('week')" data-i18n="ov_tab_week">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><rect x="3" y="4" width="18" height="7" rx="1"/><rect x="3" y="13" width="18" height="7" rx="1"/></svg>
+          Week
+        </button>
+        <button class="ov-tab" id="ov-tab-stats" role="tab" aria-selected="false"
+                onclick="ovSetTab('stats')" data-i18n="ov_tab_stats">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Stats
+        </button>
+      </nav>
+
+      <!-- Month nav (visible only on month tab) -->
+      <div class="ov-month-nav" id="ov-month-nav">
+        <button class="ov-nav-btn" onclick="ovShiftMonth(-1)" title="Previous month" data-i18n-title="notes_prev">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <span id="ov-month-label" class="ov-month-label"></span>
+        <button class="ov-nav-btn" onclick="ovShiftMonth(1)" title="Next month" data-i18n-title="notes_next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="9,18 15,12 9,6"/></svg>
+        </button>
+        <button class="ov-nav-btn ov-today-btn" onclick="ovGoToToday()" title="Today" data-i18n-title="week_today">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+        </button>
+      </div>
+
+      <!-- Week nav (visible only on week tab) -->
+      <div class="ov-month-nav hidden" id="ov-week-nav">
+        <button class="ov-nav-btn" onclick="ovShiftWeek(-1)" title="Previous week" data-i18n-title="week_prev">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="15,18 9,12 15,6"/></svg>
+        </button>
+        <span id="ov-week-label" class="ov-month-label"></span>
+        <button class="ov-nav-btn" onclick="ovShiftWeek(1)" title="Next week" data-i18n-title="week_next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="9,18 15,12 9,6"/></svg>
+        </button>
+        <button class="ov-nav-btn ov-today-btn" onclick="ovWeekToday()" title="Current week" data-i18n-title="week_today">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>
+        </button>
+      </div>
+
+      <button class="modal-close" onclick="closeOverview()" title="Voltar" data-i18n-title="tasks_back_today">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- ── Tab: Month ────────────────────────────────────────────── -->
+    <div id="ov-panel-month" class="ov-panel" role="tabpanel">
+
+      <div class="ov-month-layout">
+        <!-- Calendar -->
+        <div class="ov-month-cal">
+          <div class="ov-month-weekdays">
+            <span data-i18n="recur_mon">Mon</span><span data-i18n="recur_tue">Tue</span><span data-i18n="recur_wed">Wed</span><span data-i18n="recur_thu">Thu</span><span data-i18n="recur_fri">Fri</span><span data-i18n="recur_sat">Sat</span><span data-i18n="recur_sun">Sun</span>
+          </div>
+          <div id="ov-month-grid" class="ov-month-grid"></div>
+        </div>
+        <!-- Summary strip pinned at bottom -->
+        <div id="ov-month-stats" class="ov-month-strip"></div>
+      </div>
+    </div>
+
+    <!-- ── Tab: Week ─────────────────────────────────────────────── -->
+    <div id="ov-panel-week" class="ov-panel hidden" role="tabpanel">
+
+      <div class="ov-week-body">
+        <div id="ov-week-grid" class="ov-week-grid"></div>
+      </div>
+    </div>
+
+    <!-- ── Tab: Statistics ───────────────────────────────────────── -->
+    <div id="ov-panel-stats" class="ov-panel hidden" role="tabpanel">
+      <div class="ov-stats-body">
+
+        <!-- Top Header & Filter Toolbar -->
+        <div class="ov-stats-topbar">
+          <div class="ov-stats-ranges">
+            <button class="ov-range-btn active" data-range="7" onclick="ovSetStatsRange(7)" data-i18n="stats_range_7d">7 Dias</button>
+            <button class="ov-range-btn" data-range="14" onclick="ovSetStatsRange(14)" data-i18n="stats_range_14d">14 Dias</button>
+            <button class="ov-range-btn" data-range="30" onclick="ovSetStatsRange(30)" data-i18n="stats_range_30d">30 Dias</button>
+            <button class="ov-range-btn" data-range="all" onclick="ovSetStatsRange('all')" data-i18n="stats_range_all">Tudo</button>
+          </div>
+        </div>
+
+        <!-- 4 Primary KPI Grid Cards -->
+        <div class="ov-kpi-row ov-kpi-row-4">
+          <div class="ov-kpi-card">
+            <div class="ov-kpi-icon ov-kpi-icon-focus">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="ov-kpi-body">
+              <div class="ov-kpi-value" id="kpi-focus-week">—</div>
+              <div class="ov-kpi-label" data-i18n="stats_total_focus">Foco Total</div>
+              <div class="ov-kpi-sub" id="kpi-focus-sub">—</div>
+            </div>
+          </div>
+          <div class="ov-kpi-card">
+            <div class="ov-kpi-icon ov-kpi-icon-tasks">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <div class="ov-kpi-body">
+              <div class="ov-kpi-value" id="kpi-tasks-week">—</div>
+              <div class="ov-kpi-label" data-i18n="stats_tasks">Tarefas</div>
+              <div class="ov-kpi-sub" id="kpi-tasks-sub">—</div>
+            </div>
+          </div>
+          <div class="ov-kpi-card">
+            <div class="ov-kpi-icon ov-kpi-icon-streak">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div class="ov-kpi-body">
+              <div class="ov-kpi-value" id="kpi-streak">—</div>
+              <div class="ov-kpi-label" data-i18n="stats_streak">Sequência Atual</div>
+              <div class="ov-kpi-sub" id="kpi-streak-sub">—</div>
+            </div>
+          </div>
+          <div class="ov-kpi-card">
+            <div class="ov-kpi-icon ov-kpi-icon-pomodoro">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div class="ov-kpi-body">
+              <div class="ov-kpi-value" id="kpi-pomodoros">—</div>
+              <div class="ov-kpi-label" data-i18n="stats_sessions">Sessões de Foco</div>
+              <div class="ov-kpi-sub" id="kpi-pomo-sub">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Column Professional Analytics Layout -->
+        <div class="ov-stats-cols">
+          <!-- Left column: Compact Month Calendar & Bar Chart -->
+          <div class="ov-stats-left">
+            <div class="ov-stats-section">
+              <div class="ov-stats-section-header">
+                <div class="ov-stats-section-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <span id="ov-stats-month-title" data-i18n="stats_month_cal">Calendário Mensal</span>
+                </div>
+                <div class="ov-stats-month-nav">
+                  <button type="button" class="ov-mini-nav-btn" onclick="ovStatsShiftMonth(-1)" title="Mês anterior" data-i18n-title="notes_prev">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <button type="button" class="ov-mini-today-btn" onclick="ovStatsCurrentMonth()" data-i18n="misc_today">Hoje</button>
+                  <button type="button" class="ov-mini-nav-btn" onclick="ovStatsShiftMonth(1)" title="Mês seguinte" data-i18n-title="notes_next">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Compact Notes-Style Month Grid -->
+              <div id="ov-stats-mini-calendar" class="ov-stats-compact-cal"></div>
+
+              <!-- Day Ratings Breakdown -->
+              <div id="ov-stats-rating-summary" class="ov-stats-rating-summary"></div>
+            </div>
+          </div>
+
+          <!-- Right column: Categories, 24h Heatmap & Monthly Overview -->
+          <div class="ov-stats-right">
+            <div class="ov-stats-section">
+              <div class="ov-stats-section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></svg>
+                <span data-i18n="stats_by_category">Tarefas por Categoria</span>
+              </div>
+              <div id="ov-cat-breakdown" class="ov-cat-breakdown"></div>
+            </div>
+
+            <div class="ov-stats-section">
+              <div class="ov-stats-section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                <span data-i18n="stats_hourly_title">Distribuição Horária (24h)</span>
+              </div>
+              <div id="ov-hourly-chart" class="ov-hourly-chart"></div>
+            </div>
+
+            <div class="ov-stats-section">
+              <div class="ov-stats-section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span data-i18n="stats_month_summary">Resumo do Mês</span>
+              </div>
+              <div id="ov-month-summary" class="ov-month-summary"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div id="view-notes" class="notes-page hidden">
+    <div class="notes-shell">
+
+      
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+          <span data-i18n="nav_notes">Notas</span>
+        </div>
+          <div class="notes-header-actions">
+          <div class="month-notes-nav">
+            <button onclick="shiftMonth(-1)" title="Mês anterior" data-i18n-title="notes_prev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="15,18 9,12 15,6"/></svg>
+            </button>
+            <button onclick="goToCurrentMonth()" data-i18n="notes_today">Hoje</button>
+            <button onclick="shiftMonth(1)" title="Mês seguinte" data-i18n-title="notes_next">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="11" height="11"><polyline points="9,18 15,12 9,6"/></svg>
+            </button>
+          </div>
+          <div class="mv-picker-row">
+            <select id="notes-month-select" class="custom-select" onchange="jumpToMonthInNotes()"></select>
+            <select id="notes-year-select" class="custom-select" onchange="jumpToMonthInNotes()"></select>
+          </div>
+          <h2 id="month-notes-title" class="notes-month-title" data-i18n="notes_month">Mês</h2>
+        </div>
+        <button class="modal-close" onclick="closeNotes()" title="Voltar às tarefas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      
+      <div class="notes-3col">
+
+        
+          <div class="notes-cal-col">
+          <div class="month-notes-calendar">
+            <div class="month-weekdays"><span data-i18n="recur_mon">Seg</span><span data-i18n="recur_tue">Ter</span><span data-i18n="recur_wed">Qua</span><span data-i18n="recur_thu">Qui</span><span data-i18n="recur_fri">Sex</span><span data-i18n="recur_sat">Sáb</span><span data-i18n="recur_sun">Dom</span></div>
+            <div id="month-notes-grid" class="month-notes-grid"></div>
+          </div>
+        </div>
+
+        
+        <div class="month-note-editor-wrap">
+          <div class="month-note-toolbar">
+            <span id="month-note-date"></span>
+            <div class="notes-day-rating" id="notes-day-rating">
+              <button type="button" id="note-rate-pill-positive" class="notes-rate-dot positive" onclick="setNoteCurrentDayRating('positive')" title="Dia Positivo" data-i18n-title="rating_positive"></button>
+              <button type="button" id="note-rate-pill-neutral" class="notes-rate-dot neutral" onclick="setNoteCurrentDayRating('neutral')" title="Dia Indiferente" data-i18n-title="rating_neutral"></button>
+              <button type="button" id="note-rate-pill-negative" class="notes-rate-dot negative" onclick="setNoteCurrentDayRating('negative')" title="Dia Negativo" data-i18n-title="rating_negative"></button>
+            </div>
+            <span id="month-note-status" class="note-save-status" data-i18n="notes_saved">Guardado</span>
+            <div class="month-note-tools">
+              
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="bold" onclick="execNoteCommand('bold')" title="Negrito (Ctrl+B)" data-i18n-title="tb_bold"><b>B</b></button>
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="italic" onclick="execNoteCommand('italic')" title="Itálico (Ctrl+I)" data-i18n-title="tb_italic"><i>I</i></button>
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="underline" onclick="execNoteCommand('underline')" title="Sublinhado (Ctrl+U)" data-i18n-title="tb_underline"><u>U</u></button>
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="strikeThrough" onclick="execNoteCommand('strikeThrough')" title="Rasurado" data-i18n-title="tb_strike"><s>S</s></button>
+              </div>
+              <div class="note-tool-separator"></div>
+              
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="formatBlock" data-arg="H1" onclick="execNoteCommand('formatBlock','H1')" title="Título 1" data-i18n-title="tb_h1" style="font-weight:800;font-size:0.72rem;">H1</button>
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="formatBlock" data-arg="H2" onclick="execNoteCommand('formatBlock','H2')" title="Título 2" data-i18n-title="tb_h2" style="font-weight:700;font-size:0.68rem;">H2</button>
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="formatBlock" data-arg="H3" onclick="execNoteCommand('formatBlock','H3')" title="Título 3" data-i18n-title="tb_h3" style="font-weight:600;font-size:0.65rem;">H3</button>
+                <button type="button" class="note-tool-btn note-tool-text" data-cmd="formatBlock" data-arg="P" onclick="execNoteCommand('formatBlock','P')" title="Parágrafo normal" data-i18n-title="tb_paragraph" style="font-size:0.65rem;">¶</button>
+              </div>
+              <div class="note-tool-separator"></div>
+              
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn" data-cmd="insertUnorderedList" onclick="execNoteCommand('insertUnorderedList')" title="Lista com marcadores" data-i18n-title="tb_ul">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" data-cmd="insertOrderedList" onclick="execNoteCommand('insertOrderedList')" title="Lista numerada" data-i18n-title="tb_ol">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4H4"/><path d="M4 14h1.5a.5.5 0 0 1 0 1H4.5a.5.5 0 0 0 0 1H6"/></svg>
+                </button>
+              </div>
+              <div class="note-tool-separator"></div>
+              
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn" data-cmd="justifyLeft" onclick="execNoteCommand('justifyLeft')" title="Alinhar à esquerda" data-i18n-title="tb_align_left">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" data-cmd="justifyCenter" onclick="execNoteCommand('justifyCenter')" title="Centrar" data-i18n-title="tb_align_center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" data-cmd="justifyRight" onclick="execNoteCommand('justifyRight')" title="Alinhar à direita" data-i18n-title="tb_align_right">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+              </div>
+              <div class="note-tool-separator"></div>
+              
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn" onclick="execNoteCommand('outdent')" title="Diminuir indentação" data-i18n-title="tb_outdent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/><polyline points="3,9 6,12 3,15"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" onclick="execNoteCommand('indent')" title="Aumentar indentação" data-i18n-title="tb_indent">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="9,9 6,12 9,15"/></svg>
+                </button>
+              </div>
+              <div class="note-tool-separator"></div>
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn" onclick="execNoteCommand('undo')" title="Desfazer (Ctrl+Z)" data-i18n-title="tb_undo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M3 7v6h6"/><path d="M3 13A9 9 0 1 0 6 6.7L3 13"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" onclick="execNoteCommand('redo')" title="Refazer (Ctrl+Y)" data-i18n-title="tb_redo">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M21 7v6h-6"/><path d="M21 13A9 9 0 1 0 18 6.7L21 13"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" onclick="confirmClearNote()" title="Limpar nota" data-i18n-title="tb_clear">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+              <div class="note-tool-separator"></div>
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn" onclick="insertNoteBlockquote()" title="Citação" data-i18n-title="tb_blockquote">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M6 17h3l2-4V7H5v6h3"/><path d="M15 17h3l2-4V7h-6v6h3"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" onclick="insertNoteDateTime()" title="Inserir data e hora atual" data-i18n-title="tb_datetime">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </button>
+              </div>
+              <div class="note-tool-separator"></div>
+              <div class="note-tool-group">
+                <button type="button" class="note-tool-btn" onclick="exportCurrentNote()" title="Exportar nota do dia" data-i18n-title="notes_export_day">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </button>
+                <button type="button" class="note-tool-btn" onclick="exportMonthNotes()" title="Exportar notas do mês" data-i18n-title="notes_export_month">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="month-note-editor" class="month-note-editor" contenteditable="true" spellcheck="true" oninput="saveSelectedNote()" data-placeholder="Escreve aqui as tuas notas..." data-i18n-placeholder="editor_placeholder"></div>
+        </div>
+
+        
+        <div class="notes-tasks-col">
+          <div class="notes-tasks-header">
+            <span class="panel-label" data-i18n="notes_tasks_day">Tarefas do dia</span>
+            <span id="notes-tasks-date" class="notes-tasks-date"></span>
+          </div>
+          <div id="notes-tasks-progress" class="notes-tasks-progress hidden">
+            <div class="notes-tasks-prog-bar"><div id="notes-tasks-prog-fill" class="notes-tasks-prog-fill"></div></div>
+            <span id="notes-tasks-count" class="notes-tasks-count"></span>
+          </div>
+          <div id="notes-day-tasks" class="notes-day-tasks"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-notifications" class="modal-overlay hidden" onclick="if(event.target===this)closeNotifications()">
+    <div class="modal modal-notifications">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span data-i18n="nav_notifications">Notificações</span>
+        </div>
+        <button class="modal-close" onclick="closeNotifications()" title="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="notifications-content" class="notifications-content"></div>
+    </div>
+  </div>
+
+
+
+  <div id="modal-confirm" class="modal-overlay hidden">
+    <div class="modal modal-confirm">
+      <div class="confirm-icon" id="confirm-icon"></div>
+      <div class="confirm-title" id="confirm-title"></div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-actions">
+        <button class="confirm-btn-cancel" id="confirm-cancel" onclick="confirmCancel()" data-i18n="confirm_cancel">Cancelar</button>
+        <button class="confirm-btn-ok" id="confirm-ok" onclick="confirmOk()" data-i18n="confirm_ok">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- View Focus / Zen / Clock Mode -->
+  <div id="view-focus" class="fullscreen hidden">
+    <!-- Discreet Back Button (Top Left) -->
+    <button class="focus-back-btn" onclick="exitFocusView()" title="Voltar" data-i18n-title="focus_back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+        <polyline points="15,18 9,12 15,6"/>
+      </svg>
+    </button>
+
+    <!-- Discreet Corner Floating Dock (Bottom Right: Hidden & Discreet) -->
+    <div class="focus-discreet-dock" id="focus-discreet-dock">
+      <div class="focus-dock-tabs">
+        <button id="focus-tab-btn-focus" class="focus-dock-tab active" onclick="switchFocusTab('focus')" data-i18n="focus_tab_focus">Foco</button>
+        <button id="focus-tab-btn-clock" class="focus-dock-tab" onclick="switchFocusTab('clock')" data-i18n="focus_tab_clock">Relógio</button>
+      </div>
+      <div class="focus-dock-sep"></div>
+      <button id="focus-zen-toggle" class="focus-dock-btn" onclick="toggleFocusZenHideAll()" title="Ocultar tudo" data-i18n-title="focus_hide_all">
+        <svg id="focus-zen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- PANE 1: Focus Session Wrap -->
+    <div id="focus-session-pane" class="focus-wrap">
+      <div class="ring-wrap">
+        <div class="ring-inner">
+          <div id="focus-time" class="focus-time">25:00</div>
+        </div>
+      </div>
+      <div class="focus-actions" id="focus-actions">
+        <button id="pause-btn" class="focus-btn" onclick="togglePause()" title="Pausar sessão" data-i18n-title="focus_pause_title">
+          <span id="pause-btn-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+          </span>
+          <span id="pause-label" data-i18n="focus_pause">Pausar</span>
+        </button>
+        
+        <button class="focus-btn btn-stop" onclick="endFocus()" title="Parar sessão" data-i18n-title="focus_stop_title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+          </svg>
+          <span data-i18n="focus_stop">Parar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PANE 2: Fullscreen Clock Wrap -->
+    <div id="focus-clock-pane" class="focus-clock-wrap hidden">
+      <div class="clock-ring-wrap" id="clock-ring-wrap">
+        <div class="clock-inner">
+          <div class="clock-display">
+            <span id="clock-fs-time" class="clock-fs-time">12:00</span>
+            <span id="clock-fs-sec" class="clock-fs-sec">00</span>
+          </div>
+          <div id="clock-fs-date" class="clock-fs-date">Segunda-feira, 14 de Setembro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="timesup-overlay" class="timesup-overlay hidden">
+    <div class="timesup-inner">
+      <div class="timesup-icon">
+        <svg viewBox="0 0 56 56" fill="none" width="56" height="56">
+          <rect width="56" height="56" rx="16" fill="#fff"/>
+          <circle cx="28" cy="28" r="14" fill="none" stroke="#000" stroke-width="3" opacity="0.15"/>
+          <circle cx="28" cy="28" r="14" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-dasharray="87.96" stroke-dashoffset="0" transform="rotate(-90 28 28)"/>
+          <circle cx="28" cy="28" r="4" fill="#000"/>
+        </svg>
+      </div>
+      <div class="timesup-title" data-i18n="timesup_title">Tempo esgotado!</div>
+      <p class="timesup-lead" data-i18n="timesup_summary">Resumo da tua sessão</p>
+      <div class="timesup-summary" id="timesup-summary">
+        <div class="timesup-row">
+          <span class="timesup-label" data-i18n="timesup_activity">O que fizeste</span>
+          <span class="timesup-value" id="timesup-activity">—</span>
+        </div>
+        <div class="timesup-row">
+          <span class="timesup-label" data-i18n="timesup_focus_time">Tempo de foco</span>
+          <span class="timesup-value timesup-value-time" id="timesup-duration">—</span>
+        </div>
+        <div class="timesup-row">
+          <span class="timesup-label" data-i18n="timesup_task">Tarefa</span>
+          <span class="timesup-value" id="timesup-task">—</span>
+        </div>
+        <p class="timesup-notes hidden" id="timesup-notes"></p>
+      </div>
+      <div class="timesup-actions">
+        <button class="timesup-complete-btn hidden" id="timesup-complete-btn" onclick="confirmTaskComplete(true)" data-i18n="timesup_mark_done">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="14" height="14"><polyline points="20,6 9,17 4,12"/></svg>
+          Marcar como concluída
+        </button>
+        <button class="timesup-skip-btn hidden" id="timesup-skip-btn" onclick="confirmTaskComplete(false)" data-i18n="timesup_keep_pending">
+          Deixar pendente
+        </button>
+        <button class="timesup-back-btn" id="timesup-back-btn" onclick="dismissTimesUp()" data-i18n="timesup_back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" width="14" height="14"><polyline points="15,18 9,12 15,6"/></svg>
+          Voltar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="modal-focus" class="modal-overlay hidden" onclick="handleOverlayClick(event)">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+          <span data-i18n="picker_title">Sessão de foco</span>
+        </div>
+        <button class="modal-close" onclick="closeModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <label class="field-label" data-i18n="picker_task">Tarefa</label>
+      <select id="fp-task" class="field-select"></select>
+      
+      <label class="field-label" data-i18n="picker_custom_dur">Duração personalizada</label>
+      <div class="duration-custom">
+        <div class="duration-input-group">
+          <button class="dur-arrow" onclick="adjustDuration('fp-hours', -1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="10" height="10"><polyline points="18,15 12,9 6,15"/></svg>
+          </button>
+          <input type="number" id="fp-hours" class="duration-input" min="0" max="23" value="0" placeholder="0"/>
+          <button class="dur-arrow" onclick="adjustDuration('fp-hours', 1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="10" height="10"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <span class="duration-unit">h</span>
+        </div>
+        <div class="duration-input-group">
+          <button class="dur-arrow" onclick="adjustDuration('fp-minutes', -1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="10" height="10"><polyline points="18,15 12,9 6,15"/></svg>
+          </button>
+          <input type="number" id="fp-minutes" class="duration-input" min="0" max="59" value="25" placeholder="0"/>
+          <button class="dur-arrow" onclick="adjustDuration('fp-minutes', 1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="10" height="10"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <span class="duration-unit">min</span>
+        </div>
+        <div class="duration-input-group">
+          <button class="dur-arrow" onclick="adjustDuration('fp-seconds', -1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="10" height="10"><polyline points="18,15 12,9 6,15"/></svg>
+          </button>
+          <input type="number" id="fp-seconds" class="duration-input" min="0" max="59" value="0" placeholder="0"/>
+          <button class="dur-arrow" onclick="adjustDuration('fp-seconds', 1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="10" height="10"><polyline points="6,9 12,15 18,9"/></svg>
+          </button>
+          <span class="duration-unit">seg</span>
+        </div>
+      </div>
+      
+      <label class="field-label" data-i18n="picker_presets">Predefinições rápidas</label>
+      <div class="duration-presets">
+        <button class="preset-btn" onclick="setDuration(0, 15, this)">15m</button>
+        <button class="preset-btn active" onclick="setDuration(0, 25, this)">25m</button>
+        <button class="preset-btn" onclick="setDuration(0, 45, this)">45m</button>
+        <button class="preset-btn" onclick="setDuration(1, 0, this)">1h</button>
+        <button class="preset-btn" onclick="setDuration(1, 30, this)">1h30</button>
+        <button class="preset-btn" onclick="setDuration(2, 0, this)">2h</button>
+      </div>
+      
+      <button class="preset-btn pomodoro-btn" onclick="startPomodoro(document.getElementById('fp-task').value)" data-i18n="picker_pomodoro">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Foco 25min
+      </button>
+      
+      <button class="btn-primary" onclick="startFocus(document.getElementById('fp-task').value, parseInt(document.getElementById('fp-hours').value)||0, parseInt(document.getElementById('fp-minutes').value)||0, parseInt(document.getElementById('fp-seconds').value)||0)" data-i18n="picker_start">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11"><polygon points="5,3 19,12 5,21"/></svg>
+        Começar sessão
+      </button>
+    </div>
+  </div>
+
+  
+  <div id="modal-settings" class="modal-overlay hidden" onclick="handleSettingsOverlayClick(event)">
+    <div class="modal modal-large">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span data-i18n="settings_title">Definições</span>
+        </div>
+        <button class="modal-close" onclick="closeSettings()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      
+      <div class="settings-content">
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span data-i18n="settings_language">Idioma</span>
+          </div>
+          <div class="settings-row">
+            <select id="setting-language" class="field-select" onchange="changeLanguage(this.value)">
+              <option value="pt">🇵🇹 Português</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="fr">🇫🇷 Français</option>
+            </select>
+          </div>
+        </div>
+
+
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <span data-i18n="settings_theme">Tema</span>
+          </div>
+          <div class="settings-row">
+            <select id="setting-theme" class="field-select" onchange="applyTheme()">
+              <option value="dark" data-i18n="settings_theme_dark">Escuro (padrão)</option>
+              <option value="light" data-i18n="settings_theme_light">Claro</option>
+              <option value="sepia" data-i18n="settings_theme_sepia">Sépia</option>
+              <option value="midnight" data-i18n="settings_theme_midnight">Meia-noite</option>
+              <option value="ocean" data-i18n="settings_theme_ocean">Oceano</option>
+              <option value="forest" data-i18n="settings_theme_forest">Floresta</option>
+              <option value="lavender" data-i18n="settings_theme_lavender">Lavanda</option>
+              <option value="rose" data-i18n="settings_theme_rose">Rosa</option>
+              <option value="nord" data-i18n="settings_theme_nord">Nord</option>
+              <option value="slate" data-i18n="settings_theme_slate">Ardósia</option>
+            </select>
+          </div>
+        </div>
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            <span data-i18n="settings_font_size">Tamanho do texto</span>
+          </div>
+          <div class="settings-row">
+            <select id="setting-font-size" class="field-select" onchange="onFontSizeChange(this.value)">
+              <option value="small" data-i18n="settings_font_small">Pequeno</option>
+              <option value="normal" data-i18n="settings_font_normal">Normal</option>
+              <option value="large" selected data-i18n="settings_font_large">Grande</option>
+              <option value="xlarge" data-i18n="settings_font_xlarge">Extra Grande</option>
+              <option value="custom" data-i18n="settings_font_custom">Personalizado (Manual)</option>
+            </select>
+          </div>
+          <div id="custom-font-size-row" class="settings-row hidden" style="margin-top: 10px;">
+            <input type="range" id="setting-custom-font-size" class="range-slider" min="11" max="22" step="0.5" value="15" oninput="onCustomFontSizeInput(this.value)" onchange="onCustomFontSizeChange(this.value)">
+            <span id="custom-font-size-val" class="volume-val" style="min-width: 44px;">15px</span>
+          </div>
+          <div class="custom-cat-empty" style="margin-top: 6px;">
+            <span data-i18n="settings_font_help">Ajusta a escala da tipografia base da aplicação (11px – 22px).</span>
+          </div>
+        </div>
+
+        <!-- Resolução do ecrã / Escala da Interface -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span data-i18n="settings_resolution">Resolução do ecrã / Escala</span>
+          </div>
+          <div class="settings-row" style="display: flex; gap: 8px; align-items: center;">
+            <select id="setting-resolution" class="field-select" style="flex: 1;" onchange="onResolutionChange(this.value)">
+              <option value="auto" data-i18n="settings_res_auto">Automático (Detetar Ecrã)</option>
+              <option value="1080p" selected data-i18n="settings_res_1080p">1920 × 1080 (Full HD / Padrão • 100%)</option>
+              <option value="laptop" data-i18n="settings_res_laptop">1366 × 768 / 1280 × 720 (Portátil Compacto • 80%)</option>
+              <option value="laptop_wide" data-i18n="settings_res_laptop_wide">1600 × 900 / 1440 × 900 (Portátil Médio • 90%)</option>
+              <option value="2k" data-i18n="settings_res_2k">2560 × 1440 (2K / QHD • 125%)</option>
+              <option value="4k" data-i18n="settings_res_4k">3840 × 2160 (4K / UHD • 160%)</option>
+              <option value="custom" data-i18n="settings_res_custom">Personalizado (Manual)</option>
+            </select>
+            <button type="button" id="refresh-resolution-btn" class="settings-icon-btn" onclick="refreshCurrentScreenResolution()" title="Recalibrar para o ecrã atual" data-i18n-title="settings_res_refresh">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            </button>
+          </div>
+          <div id="custom-scale-row" class="settings-row hidden" style="margin-top: 10px;">
+            <input type="range" id="setting-custom-scale" class="range-slider" min="70" max="200" step="5" value="100" oninput="onCustomScaleInput(this.value)" onchange="onCustomScaleChange(this.value)">
+            <span id="custom-scale-val" class="volume-val" style="min-width: 44px;">100%</span>
+          </div>
+          <div class="custom-cat-empty" style="margin-top: 6px;">
+            <span data-i18n="settings_resolution_help">Ajusta a escala da interface ao teu monitor (base: 1920×1080).</span>
+          </div>
+        </div>
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span data-i18n="settings_notify">Notificações</span>
+          </div>
+          <div class="settings-row" style="margin-bottom:8px">
+            <button class="notif-settings-btn" id="settings-notif-btn" onclick="requestNotif()">
+            </button>
+            <span id="settings-notif-label" class="notif-settings-label">A carregar...</span>
+          </div>
+          <div class="settings-row">
+            <label class="toggle-option">
+              <input type="checkbox" id="setting-notif-enabled" checked onchange="saveSettings(); updateNotifBtn()">
+              <span class="toggle-switch"></span>
+              <span class="toggle-text" data-i18n="settings_notify_system">Notificações do sistema</span>
+            </label>
+          </div>
+          <div class="custom-cat-empty" style="margin-top: 4px;">
+            <span data-i18n="settings_notify_bg_help">Ao fechar a janela, o Pace fica minimizado junto ao relógio para enviar notificações de tarefas agendadas.</span>
+          </div>
+        </div>
+
+        <!-- Arranque com o sistema -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span data-i18n="settings_autostart">Arranque com o sistema</span>
+          </div>
+          <div class="settings-row">
+            <label class="toggle-option">
+              <input type="checkbox" id="setting-autostart" onchange="toggleAutostart(this.checked)">
+              <span class="toggle-switch"></span>
+              <span class="toggle-text" data-i18n="settings_autostart_label">Abrir o Pace ao iniciar o computador</span>
+            </label>
+          </div>
+        </div>
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span data-i18n="settings_alarm">Toque de alerta</span>
+          </div>
+          <div class="settings-row">
+            <select id="setting-alarm-sound" class="field-select" onchange="previewAlarmSound()">
+              <option value="bell" selected data-i18n="settings_alarm_bell">Sino suave</option>
+              <option value="digital" data-i18n="settings_alarm_digital">Digital (clássico)</option>
+              <option value="chime" data-i18n="settings_alarm_chime">Campainha</option>
+              <option value="soft" data-i18n="settings_alarm_soft">Calmo</option>
+              <option value="bowl" data-i18n="settings_alarm_bowl">Taça tibetana</option>
+              <option value="rain" data-i18n="settings_alarm_rain">Chuva leve</option>
+              <option value="waves" data-i18n="settings_alarm_waves">Ondas suaves</option>
+              <option value="lofi" data-i18n="settings_alarm_lofi">Lofi suave</option>
+              <option value="beep" data-i18n="settings_alarm_beep">Bipe moderno</option>
+              <option value="alarm" data-i18n="settings_alarm_alarm">Alarme intenso</option>
+              <option value="nature" data-i18n="settings_alarm_nature">Sons da natureza</option>
+            </select>
+            <button class="preview-btn" onclick="previewAlarmSound()" title="Pré-visualizar" data-i18n-title="settings_alarm_preview">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><polygon points="5,3 19,12 5,21"/></svg>
+            </button>
+          </div>
+        </div>
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <span data-i18n="settings_volume">Volume</span>
+          </div>
+          <div class="settings-row">
+            <input type="range" id="setting-volume" min="0" max="100" value="70" class="range-slider" oninput="updateVolumeLabel()">
+            <span id="volume-label" class="volume-label">70%</span>
+            <button type="button" class="preview-btn" onclick="previewVolume()" title="Ouvir som" data-i18n-title="settings_volume_listen">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11"><polygon points="5,3 19,12 5,21"/></svg>
+            </button>
+          </div>
+        </div>
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            <span data-i18n="settings_timer_format">Formato do temporizador</span>
+          </div>
+          <div class="settings-row">
+            <label class="toggle-option">
+              <input type="checkbox" id="setting-show-seconds" checked onchange="saveSettings()">
+              <span class="toggle-switch"></span>
+              <span class="toggle-text" data-i18n="settings_show_seconds">Mostrar segundos</span>
+            </label>
+          </div>
+        </div>
+
+        
+        
+
+
+        
+        <div class="settings-drawer">
+          <div class="settings-drawer-title">
+            <span class="settings-drawer-title-text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+              <span data-i18n="settings_accent">Cor de destaque</span>
+            </span>
+          </div>
+          <div class="settings-drawer-content">
+            <p style="font-size: 0.65rem; color: var(--muted); margin-bottom: 8px; line-height: 1.4;" data-i18n="settings_accent_desc">Escolhe a cor de destaque para a app usando swatches ou picker personalizado.</p>
+            <div id="settings-color-swatches" class="settings-row settings-colors"></div>
+            <input type="color" id="custom-color-input" style="display:none" onchange="onCustomColorSelected()" value="#6366f1">
+          </div>
+        </div>
+
+
+
+        
+        <div class="settings-drawer">
+          <div class="settings-drawer-title">
+            <span class="settings-drawer-title-text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13" style="display:inline;margin-right:6px;vertical-align:-2px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              <span data-i18n="settings_layout">Disposição da página inicial</span>
+            </span>
+          </div>
+          <div class="settings-drawer-content has-apply">
+            <p style="font-size:0.65rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="settings_layout_desc">Escolhe como a semana e as tarefas são dispostas na página principal.</p>
+            <div id="main-layout-grid" class="note-layout-grid"></div>
+            <button class="apply-style-btn" onclick="applyMainLayout()" data-i18n="settings_layout_apply">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>
+              Aplicar disposição
+            </button>
+          </div>
+        </div>
+
+        
+        <div class="settings-drawer">
+          <div class="settings-drawer-title">
+            <span class="settings-drawer-title-text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13" style="display:inline;margin-right:6px;vertical-align:-2px;"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span data-i18n="settings_week_sidebar">Barra lateral da semana</span>
+            </span>
+          </div>
+          <div class="settings-drawer-content has-apply">
+            <p style="font-size:0.65rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="settings_week_sidebar_desc">Escolhe como os dias da semana são apresentados na barra lateral.</p>
+            <div id="week-view-grid" class="week-view-grid"></div>
+            <button class="apply-style-btn" onclick="applyWeekView()" data-i18n="settings_week_apply">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>
+              Aplicar
+            </button>
+          </div>
+        </div>
+
+        
+        <div class="settings-drawer">
+          <div class="settings-drawer-title">
+            <span class="settings-drawer-title-text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13" style="display:inline;margin-right:6px;vertical-align:-2px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+              <span data-i18n="settings_notes_layout">Disposição das notas</span>
+            </span>
+          </div>
+          <div class="settings-drawer-content has-apply">
+            <p style="font-size:0.65rem;color:var(--muted);margin-bottom:10px;line-height:1.4;" data-i18n="settings_notes_layout_desc">Escolhe como o calendário, editor e tarefas são dispostos na vista de Notas.</p>
+            <div id="note-layout-grid" class="note-layout-grid"></div>
+            <button class="apply-style-btn" onclick="applyNoteLayout()" data-i18n="settings_layout_apply">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><polyline points="20 6 9 17 4 12"/></svg>
+              Aplicar disposição
+            </button>
+          </div>
+        </div>
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+            <span data-i18n="settings_cats">Categorias</span>
+          </div>
+          <div id="custom-categories-list" class="custom-cat-list"></div>
+          <div class="custom-cat-add">
+            <input type="text" id="new-cat-name" class="field-input" placeholder="Nome da categoria" data-i18n-placeholder="settings_cats_placeholder" maxlength="24"/>
+            <input type="color" id="new-cat-color" value="#6366f1" class="color-picker-input"/>
+            <button onclick="addCustomCategory()" class="btn-add-cat" data-i18n="settings_cats_add">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Adicionar
+            </button>
+          </div>
+        </div>
+
+        
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            <span data-i18n="settings_data">Dados</span>
+          </div>
+          <div class="settings-row" style="gap:8px; flex-wrap:wrap;">
+            <button onclick="exportData()" class="settings-action-btn" data-i18n="settings_export">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar dados
+            </button>
+            <button onclick="importData()" class="settings-action-btn" data-i18n="settings_import">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Importar dados
+            </button>
+            <button onclick="resetSettingsToDefaults()" class="settings-action-btn" data-i18n="settings_reset_btn" style="color:#f59e0b;border-color:rgba(245,158,11,0.3)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              Repor definições
+            </button>
+            <button class="settings-action-btn" style="color:var(--danger);border-color:rgba(255,68,68,0.25)" onclick="clearAllData()" data-i18n="settings_clear">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+              Limpar tudo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div id="modal-goals" class="modal-overlay hidden" onclick="handleGoalsOverlayClick(event)">
+    <div class="modal modal-large">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <span data-i18n="nav_goals">Objetivos</span>
+        </div>
+        <button class="modal-close" onclick="closeGoals()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="goals-content">
+        <div class="add-goal-form">
+          <div class="add-goal-row">
+            <input type="text" id="goal-input" placeholder="Nome do objetivo (ex: Ficar em forma)..." data-i18n-placeholder="goal_name_placeholder" autocomplete="off" onkeydown="if(event.key==='Enter')addGoal()"/>
+          </div>
+          <div class="add-goal-row add-goal-row-meta">
+            <input type="text" id="goal-desc" placeholder="Descrição (opcional)..." data-i18n-placeholder="goal_desc_placeholder" autocomplete="off" class="goal-desc-input"/>
+            <select id="goal-type" class="field-select goal-field-select">
+              <option value="week" data-i18n="goal_type_weekly">Semanal</option>
+              <option value="month" data-i18n="goal_type_monthly">Mensal</option>
+              <option value="quarter" data-i18n="goal_type_quarterly">Trimestral</option>
+              <option value="year" data-i18n="goal_type_yearly">Anual</option>
+              <option value="custom" data-i18n="goal_type_custom">Personalizado</option>
+              <option value="none" data-i18n="goal_type_indef">Indeterminado</option>
+            </select>
+            <select id="goal-category" class="field-select goal-field-select">
+              <option value="" data-i18n="task_cat_none">Sem categoria</option>
+            </select>
+            <input type="date" id="goal-deadline" class="field-input goal-deadline-input hidden" title="Data limite (opcional)"/>
+            <button class="btn-goal-add" onclick="addGoal()" data-i18n="goal_create">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Criar objetivo
+            </button>
+          </div>
+        </div>
+        <div id="goals-list" class="goals-list"></div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="modal-subgoal" class="modal-overlay hidden" onclick="if(event.target===this)closeSubGoalModal()">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span data-i18n="goal_sub_title">Sub-objetivos</span>
+        </div>
+        <button class="modal-close" onclick="closeSubGoalModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="subgoal-modal-goal-name" class="subgoal-modal-title"></div>
+      <div class="subgoal-add-row">
+        <input type="text" id="subgoal-input" placeholder="Novo sub-objetivo..." data-i18n-placeholder="goal_sub_placeholder" autocomplete="off" onkeydown="if(event.key==='Enter')addSubGoal()"/>
+        <button class="btn-goal-add" onclick="addSubGoal()" data-i18n="goal_sub_add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar
+        </button>
+      </div>
+      <div id="subgoal-list" class="subgoal-list"></div>
+    </div>
+  </div>
+
+  
+  <div id="modal-routines" class="modal-overlay hidden" onclick="handleRoutinesOverlayClick(event)">
+    <div class="modal modal-large">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          <span data-i18n="nav_routines">Rotinas diárias</span>
+        </div>
+        <button class="modal-close" onclick="closeRoutines()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="routines-content">
+        <div class="add-routine-form">
+          <div class="add-routine-row">
+            <input type="text" id="routine-input" placeholder="Nome da rotina (ex: Rotina matinal, Treino, Fecho do dia)..." autocomplete="off" onkeydown="if(event.key==='Enter')addRoutine()"/>
+          </div>
+          <div class="add-routine-row add-routine-row-meta">
+            <div class="routine-presets-row">
+              <button type="button" class="routine-preset-btn" onclick="setRoutineDaysPreset('all')" data-i18n="routine_preset_all">Todos os dias</button>
+              <button type="button" class="routine-preset-btn" onclick="setRoutineDaysPreset('weekdays')" data-i18n="routine_preset_weekdays">Dias úteis</button>
+              <button type="button" class="routine-preset-btn" onclick="setRoutineDaysPreset('weekend')" data-i18n="routine_preset_weekend">Fim de semana</button>
+            </div>
+            <div class="routine-days-selector" id="routine-days">
+              <button class="day-pill" data-day="1" onclick="toggleRoutineFormDay(this)" data-i18n="recur_mon">Seg</button>
+              <button class="day-pill" data-day="2" onclick="toggleRoutineFormDay(this)" data-i18n="recur_tue">Ter</button>
+              <button class="day-pill" data-day="3" onclick="toggleRoutineFormDay(this)" data-i18n="recur_wed">Qua</button>
+              <button class="day-pill" data-day="4" onclick="toggleRoutineFormDay(this)" data-i18n="recur_thu">Qui</button>
+              <button class="day-pill" data-day="5" onclick="toggleRoutineFormDay(this)" data-i18n="recur_fri">Sex</button>
+              <button class="day-pill" data-day="6" onclick="toggleRoutineFormDay(this)" data-i18n="recur_sat">Sáb</button>
+              <button class="day-pill" data-day="0" onclick="toggleRoutineFormDay(this)" data-i18n="recur_sun">Dom</button>
+            </div>
+            <div class="routine-color-picker-wrap">
+              <div class="routine-color-swatches" id="routine-swatches">
+                <button type="button" class="routine-color-swatch active" style="background:#6366f1" onclick="selectRoutineColor('#6366f1', this)"></button>
+                <button type="button" class="routine-color-swatch" style="background:#10b981" onclick="selectRoutineColor('#10b981', this)"></button>
+                <button type="button" class="routine-color-swatch" style="background:#f59e0b" onclick="selectRoutineColor('#f59e0b', this)"></button>
+                <button type="button" class="routine-color-swatch" style="background:#ef4444" onclick="selectRoutineColor('#ef4444', this)"></button>
+                <button type="button" class="routine-color-swatch" style="background:#06b6d4" onclick="selectRoutineColor('#06b6d4', this)"></button>
+                <button type="button" class="routine-color-swatch" style="background:#8b5cf6" onclick="selectRoutineColor('#8b5cf6', this)"></button>
+              </div>
+              <label class="routine-color-label" title="Cor personalizada">
+                <input type="color" id="routine-color" value="#6366f1" onchange="onRoutineCustomColorChange(this.value)"/>
+              </label>
+            </div>
+            <button class="btn-routine-add" onclick="addRoutine()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Criar rotina
+            </button>
+          </div>
+        </div>
+        <div id="routines-list" class="routines-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Overview: Detalhes do Dia (Simples, estilo Notas) -->
+  <div id="modal-month-day" class="modal-overlay hidden" onclick="handleMonthDayOverlayClick(event)">
+    <div class="modal modal-day-details">
+      <div class="modal-head">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span id="month-day-title" data-i18n="month_day_modal_title">Detalhes do Dia</span>
+        </div>
+        <div class="modal-head-right">
+          <div class="notes-day-rating" id="modal-day-rating"></div>
+          <button class="modal-close" onclick="closeMonthDayModal()" title="Fechar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="month-day-content" class="month-day-content"></div>
+    </div>
+  </div>
+
+  <div id="modal-stats-day" class="modal-overlay hidden" onclick="closeMonthDayModal()"></div>
+</div> <!-- /#app -->
+
+<div id="toast-stack"></div>
+
+<!-- Tauri bridge: carregado DEPOIS de todos os outros scripts para garantir
+     que os listeners em app.js e state.js já estão registados quando o
+     evento 'tauri-bridge-ready' disparar. -->
+<script src="js/i18n.js"></script>
+<script src="locales/pt.js"></script>
+<script src="locales/en.js"></script>
+<script src="locales/es.js"></script>
+<script src="locales/fr.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/state.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/goals.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/routines.js"></script>
+<script src="js/notes.js"></script>
+<script src="js/focus.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/monthview.js"></script>
+<script src="js/customselect.js"></script>
+<script src="js/overview.js"></script>
+<script src="js/spellcheck.js"></script>
+<script src="js/contextmenu.js"></script>
+<script src="js/app.js"></script>
+<script src="js/tauri-bridge.js"></script>
+</body>
+</html>

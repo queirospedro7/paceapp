@@ -1,0 +1,69 @@
+/* ── App Splash Screen ─────────────────────────────────────────── */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  transition: opacity 0.5s cubic-bezier(.4,0,.2,1),
+              visibility 0.5s cubic-bezier(.4,0,.2,1);
+}
+#splash.splash-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Wordmark */
+.splash-wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: .03em;
+  letter-spacing: -.07em;
+  line-height: 1;
+  font-size: clamp(3.5rem, 12vw, 7rem);
+  font-weight: 900;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: splash-rise .7s cubic-bezier(.16,1,.3,1) .1s forwards;
+  will-change: opacity, transform;
+}
+.splash-pace {
+  color: #fff;
+  letter-spacing: -0.05em;
+}
+
+/* Progress bar */
+.splash-bar-wrap {
+  width: 80px;
+  height: 1px;
+  background: rgba(255,255,255,.1);
+  border-radius: 99px;
+  overflow: hidden;
+  opacity: 0;
+  animation: splash-fade .3s ease .35s forwards;
+}
+.splash-bar {
+  height: 100%;
+  width: 0%;
+  background: rgba(255,255,255,.6);
+  border-radius: 99px;
+  animation: splash-progress .75s cubic-bezier(.4,0,.2,1) .3s forwards;
+}
+
+@keyframes splash-rise {
+  from { opacity: 0; transform: translateY(16px) skewY(1.5deg); }
+  to   { opacity: 1; transform: translateY(0) skewY(0); }
+}
+@keyframes splash-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes splash-progress {
+  from { width: 0%; }
+  to   { width: 100%; }
+}

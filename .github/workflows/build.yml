@@ -1,0 +1,159 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'          # Dispara em tags tipo v1.3.0, v1.4.0, etc.
+  workflow_dispatch:  # Permite correr manualmente no GitHub
+
+jobs:
+
+  # ── Windows ────────────────────────────────────────────────────
+  build-windows:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build NSIS installer
+        run: npm run build:nsis
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build portable
+        run: npm run build:portable
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            dist/*.exe
+          retention-days: 7
+
+  # ── macOS ──────────────────────────────────────────────────────
+  build-mac:
+    name: macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate .icns icon
+        run: |
+          mkdir -p assets/icons.iconset
+          # Gera vários tamanhos a partir do SVG usando sips + iconutil
+          for SIZE in 16 32 64 128 256 512; do
+            sips -z $SIZE $SIZE assets/icon.svg \
+              --out assets/icons.iconset/icon_${SIZE}x${SIZE}.png 2>/dev/null || true
+          done
+          iconutil -c icns assets/icons.iconset -o assets/icon.icns 2>/dev/null || \
+            cp assets/icon.svg assets/icon.icns || true
+
+      - name: Build DMG
+        run: npm run build:mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Sem certificado de assinatura — app não assinada (funciona para distribuição direta)
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: |
+            dist/*.dmg
+          retention-days: 7
+
+  # ── Linux ──────────────────────────────────────────────────────
+  build-linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build AppImage
+        run: npm run build:linux
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: |
+            dist/*.AppImage
+          retention-days: 7
+
+  # ── Release (só em tags) ───────────────────────────────────────
+  release:
+    name: Create Release
+    needs: [build-windows, build-mac, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-files
+          merge-multiple: true
+
+      - name: List files
+        run: ls -lh release-files/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Pace ${{ github.ref_name }}
+          body: |
+            ## Pace ${{ github.ref_name }}
+
+            ### Download
+
+            | Platform | Ficheiro |
+            |----------|---------|
+            | Windows  | `Pace-*.exe` (installer) ou `Pace-Portable.exe` |
+            | macOS    | `Pace-*.dmg` |
+            | Linux    | `Pace-*.AppImage` |
+
+            ### Notas
+            - macOS: Se aparecer aviso de segurança, vai a **Definições → Privacidade → Segurança** e clica "Abrir mesmo assim"
+            - Linux: Torna o AppImage executável com `chmod +x Pace-*.AppImage`
+          files: release-files/**
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
